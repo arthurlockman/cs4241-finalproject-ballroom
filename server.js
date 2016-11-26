@@ -1,8 +1,10 @@
 var http = require('http')
   , fs   = require('fs')
   , url  = require('url')
-  , port = 8080;
+  , port = 8080
+  , scraper = require('./scraper.js');
 
+scraper.scrape('http://www.o2cm.com/results/')
 var server = http.createServer (function (req, res) {
   var uri = url.parse(req.url)
 

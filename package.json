@@ -8,5 +8,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "cheerio": "^0.22.0",
+    "cheerio-tableparser": "^1.0.1"
   }
 }
