@@ -16,42 +16,32 @@ const COMPETITION_YEAR_SELECTOR = '.h3'
 
 ROOT_URL = 'http://www.o2cm.com/results/'
 LOG = false
+NO_SELECTOR = -9999;
 
 
 /* SCRIPT ENTRANCE */
+var d = new Date();
+var startTime = d.getTime();
 
 scrape()
+
+d = new Date();
+var endTime = d.getTime();
+
+console.log("Total time: " + (endTime - startTime))
 
 /* END SCRIPT */
 
 function scrape() {
 
-  // Scrape the main results webpage
+  // Load the main page
   loadMainPage_Promise(ROOT_URL)
+
+  // Extract the competition URLs and perform next step
   .then(forEveryCompetitionPage)
 }
 
-function loadPage_Promise(url) {
-  return new Promise(function(resolve, reject){
-
-    // Perform the asynch request
-    request(url, function(error, response, html){
-
-      // Load the page
-      // var $ = cheerio.load(html)
-      var ROOT_PAGE = cheerio.load(fs.readFileSync('competitions_page.html'))
-
-      // TODO
-      // Assuming that all the requests finished with no errors
-      // Should check for this somehow
-
-      // Return the page
-      resolve(ROOT_PAGE)
-      
-    })
-  })
-}
-
+// Load the main page into memory
 function loadMainPage_Promise(url) {
   return new Promise(function(resolve, reject){
 
@@ -59,8 +49,8 @@ function loadMainPage_Promise(url) {
     request(url, function(error, response, html){
 
       // Load the page
-      // var $ = cheerio.load(html)
-      var ROOT_PAGE = cheerio.load(fs.readFileSync('competitions_page.html'))
+      var ROOT_PAGE = cheerio.load(html)
+      // var ROOT_PAGE = cheerio.load(fs.readFileSync('competitions_page.html'))
 
       // Return the page
       resolve(ROOT_PAGE)
@@ -70,7 +60,7 @@ function loadMainPage_Promise(url) {
 }
 
 function forEveryCompetitionPage(ROOT_PAGE) {
-  // Extract the competition info from the page
+  // Extract the competition URLs and other info
   var gen = competitionLinkGenerator(ROOT_PAGE)
   while(true) {
     var next = gen.next()
@@ -83,7 +73,10 @@ function forEveryCompetitionPage(ROOT_PAGE) {
       var competitionInfo = next.value
       var ref = competitionInfo.ref
 
+      // Load each competition page
       loadCompetitionPage_Promise(ROOT_URL, ref)
+
+      // Extract the event URLs and perform next step
       .then(forEveryEventPage)
     }
   }
@@ -124,12 +117,12 @@ function loadCompetitionPage_Promise(ROOT_URL, ref) {
       body: formData,
       method: 'POST'
     }, function (err, res, body) {
-        console.log(body)
         var COMPETITION_PAGE = cheerio.load(body)
         resolve(COMPETITION_PAGE)
     });
   })
 }
+
 
 function forEveryEventPage(COMPETITION_PAGE) {
 
@@ -145,14 +138,119 @@ function forEveryEventPage(COMPETITION_PAGE) {
       // TODO keep track of info here
       var eventInfo = next.value
 
-      var url = ROOT_URL + eventInfo.ref
+      var ref = eventInfo.ref
 
-      loadEventPage_Promise(url)
-      .then(function() {})
+      // Load a single event into memory
+      loadEventPage_Promise(ref)
 
-      // console.log(eventInfo)
+      // Extract the selectors and continue onto the next step
+      .then(function(tuple) {
+        var EVENT_PAGE = tuple[0]
+        var ref = tuple[1]
+        forEveryRound(EVENT_PAGE, ref)
+      })
+
     }
   }
+}
+
+function loadEventPage_Promise(ref) {
+
+  var url = ROOT_URL + ref
+
+  return new Promise(function(resolve, reject){
+
+    // Perform the asynch request
+    request(url, function(error, response, html){
+
+      // Load the page
+      var EVENT_PAGE = cheerio.load(html)
+      // var EVENT_PAGE = cheerio.load(fs.readFileSync('event_page.html'))
+
+      // Return the page and the url of the page
+      var tuple = [EVENT_PAGE, ref]
+      resolve(tuple)
+      
+    })
+
+  })
+}
+
+function forEveryRound(EVENT_PAGE, ref) {
+
+  // Extract the selector info from the page
+  var gen = roundSelectorGenerator(EVENT_PAGE)
+  while(true) {
+    var next = gen.next()
+
+    if(next.done == true){
+      break
+    }
+    else {
+      // TODO keep track of info here
+      var selectorId = next.value
+
+      if(selectorId == NO_SELECTOR){
+        continue;
+      }
+
+      // Load a single round into memory
+      loadRoundPage_Promise(ref, selectorId)
+
+      // Scape the round
+      .then(function(ROUND_PAGE){
+        // DO SOMETHING HERE
+        console.log(ROUND_PAGE.html())
+      })
+      // .then(scrapeRound)
+
+    }
+  }
+}
+
+function loadRoundPage_Promise(ref, selectorId) {
+
+  var details = ref.split('?')
+  var path = details[0]
+  var URI = ROOT_URL + path
+
+  var getParams = details[1].split('&')
+  var EVENT_NAME = getParams[0].split('=')[1]
+  var HEAD_ID = getParams[1].split('=')[1]
+
+  var formDetails = { 
+  heatid: HEAD_ID, 
+  event: EVENT_NAME,
+  selCount: selectorId
+  };
+
+  var formData = querystring.stringify(formDetails);
+  var contentLength = formData.length;
+
+  return new Promise(function(resolve, reject) {
+    request(
+    {
+      headers: {
+        'Host': 'www.o2cm.com',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-us',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+
+      uri: URI,
+      body: formData,
+      method: 'POST'
+    }, function (err, res, body) {
+        var ROUND_PAGE = cheerio.load(body)
+        resolve(ROUND_PAGE)
+    });
+  })
+
+}
+
+function scrapeRound(ROUND_PAGE) {
+
 }
 
 
@@ -163,7 +261,7 @@ function *competitionLinkGenerator($) {
   var competitionInfo = []
 
   var arr = $('table tr')
-  // TODO change back
+  // TODO Extract only the first competition (happens on line 4)
   for(var i = 0; i < 4 /*arr.length*/; i++) {
     var element = arr[i]
 
@@ -191,39 +289,34 @@ function *eventLinkGenerator($) {
   var links = []
 
   var arr = $('.h5b')
+  // TODO just getting the first 5 events
   for(var i = 0; i < arr.length; i++) {
     var element = arr[i]
 
-    var ref       = $(element).find('a').attr('href')
-    ,   skill  = $(element).find('a').text().trim()
+    var ref   = $(element).find('a').attr('href')
+    ,   skill = $(element).find('a').text().trim()
 
     yield new EventInfo("Amateur", "Adult", skill, "PARSE THIS", ref)
   }
 }
 
-function loadEventPage_Promise(url) {
-  return new Promise(function(resolve, reject){
-    // Perform the asynch request
-    request(url, function(error, response, html){
+function *roundSelectorGenerator($) {
 
-      // TODO PRESS THE SUBMIT BUTTON SOMEHOW
+  var rounds = []
 
-      // Load the page
-      // var $ = cheerio.load(html)
-      // COMPETITION_PAGE = cheerio.load(fs.readFileSync('tufts_page.html'))
-      // var COMPETITION_PAGE = cheerio.load(fs.readFileSync('tufts_page_submitted.html'))
+  var arr = $('SELECT OPTION')
 
-      // TODO
-      // Assuming that all the requests finished with no errors
-      // Should check for this somehow
+  if(arr.length == 0) {
+    yield NO_SELECTOR
+    return;
+  }
 
-      // Return the page
-      // resolve(COMPETITION_PAGE)
-      resolve(0)
-      
-    })
+  for(var i = 0; i < arr.length; i++) {
+    var element = arr[i]
 
-  })
+    yield $(element).attr('value')
+  }
+
 }
 
 class CompetitionInfo {
