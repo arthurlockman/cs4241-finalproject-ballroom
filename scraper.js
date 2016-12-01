@@ -26,15 +26,15 @@ scrape()
 function scrape() {
 
   // Scrape the main results webpage
-  loadMainPage_Promise()
+  loadMainPage_Promise(ROOT_URL)
   .then(forEveryCompetitionPage)
 }
 
-function loadMainPage_Promise() {
+function loadMainPage_Promise(url) {
   return new Promise(function(resolve, reject){
 
     // Perform the asynch request
-    request(ROOT_URL, function(error, response, html){
+    request(url, function(error, response, html){
 
       // Load the page
       // var $ = cheerio.load(html);
@@ -62,10 +62,10 @@ function forEveryCompetitionPage(ROOT_PAGE) {
     }
     else {
       // TODO keep track of info here
-      var info = next.value
+      var competitionInfo = next.value
 
       // Load the competition page
-      var url = ROOT_URL + info.ref;
+      var url = ROOT_URL + competitionInfo.ref;
 
       loadCompetitionPage_Promise(url)
       .then(forEveryEventPage)
@@ -109,8 +109,14 @@ function forEveryEventPage(COMPETITION_PAGE) {
     }
     else {
       // TODO keep track of info here
-      console.log(next.value)
+      var eventInfo = next.value
 
+      var url = ROOT_URL + eventInfo.ref
+
+      loadEventPage_Promise(url)
+      .then(function() {})
+
+      console.log(eventInfo)
     }
   }
 }
@@ -123,7 +129,8 @@ function *competitionLinkGenerator($) {
   var competitionInfo = []
 
   var arr = $('table tr')
-  for(var i = 0; i < arr.length; i++) {
+  // TODO change back
+  for(var i = 0; i < 4 /*arr.length*/; i++) {
     var element = arr[i];
 
     // Check if it is a year
@@ -139,8 +146,7 @@ function *competitionLinkGenerator($) {
 
       // Ensure no gibberish
       if(!(name == '' || date == '' || year == '' || ref == 'undefined')){
-        var info = new CompetitionInfo(name, date, year, ref);
-        yield info
+        yield new CompetitionInfo(name, date, year, ref);
       }
     }
 
@@ -154,15 +160,36 @@ function *eventLinkGenerator($) {
   for(var i = 0; i < arr.length; i++) {
     var element = arr[i];
 
-    console.log($(element).find('a').text().trim())
+    var ref       = $(element).find('a').attr('href')
+    ,   skill  = $(element).find('a').text().trim()
+
+    yield new EventInfo("Amateur", "Adult", skill, "PARSE THIS", ref);
   }
 }
 
-class Competitor {
-  constructor(firstName, lastName) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
+function loadEventPage_Promise(url) {
+  return new Promise(function(resolve, reject){
+    // Perform the asynch request
+    request(url, function(error, response, html){
+
+      // TODO PRESS THE SUBMIT BUTTON SOMEHOW
+
+      // Load the page
+      // var $ = cheerio.load(html);
+      // COMPETITION_PAGE = cheerio.load(fs.readFileSync('tufts_page.html'));
+      // var COMPETITION_PAGE = cheerio.load(fs.readFileSync('tufts_page_submitted.html'));
+
+      // TODO
+      // Assuming that all the requests finished with no errors
+      // Should check for this somehow
+
+      // Return the page
+      // resolve(COMPETITION_PAGE)
+      resolve(0)
+      
+    })
+
+  })
 }
 
 class CompetitionInfo {
@@ -172,8 +199,14 @@ class CompetitionInfo {
     this.year = year;
     this.ref = ref;
   }
+}
 
-  toString() {
-    return name + " " + date + ", " + year;
+class EventInfo {
+  constructor(division, age, skill, style, ref) {
+    this.division = division;
+    this.age = age;
+    this.skill = skill;
+    this.style = style;
+    this.ref = ref;
   }
 }
