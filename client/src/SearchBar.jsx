@@ -108,6 +108,7 @@ class SearchBar extends React.Component {
     onSearch(e) {
         e.preventDefault();
         this.search();
+        return false;
     }
     
     render() {

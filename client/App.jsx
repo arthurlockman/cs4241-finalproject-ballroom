@@ -3,7 +3,7 @@ import './babel-polyfill/src/index.js'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SearchBar from './src/SearchBar.jsx';
-import FetchDemo from './GetForum.jsx';
+import Results from './Results.jsx';
 import axios from 'axios';
 
 var matches
@@ -41,35 +41,49 @@ function searchName(name) {
 
 getSubreddit()
 
-const App = React.createClass({
+class App extends React.Component {
+
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            didSearch: false
+        };
+        this.onSearch = this.onSearch.bind(this);
+    }
 
     onChange(input, resolve) {
-        getSubreddit()
+        //getSubreddit()
         // Simulate AJAX request
         //console.log("matches", matches);
         setTimeout(() => {
-            const suggestions = matches[Object.keys(matches).find((partial) => {
-                    return input.match(new RegExp(partial), 'i');
-                })] || matches;
-
+            // const suggestions = matches[Object.keys(matches).find((partial) => {
+            //         return input.match(new RegExp(partial), 'i');
+            //     })] || matches;
+            const suggestions = matches;
             resolve(suggestions.filter((suggestion) => suggestion.match(new RegExp('^' + input.replace(/\W\s/g, ''), 'i'))));
         }, 25);
-    },
+    }
     onSearch(input) {
         if (!input) 
             return;
         console.info(`Searching "${input}"`);
-        window.location.href = searchName(input)
-    },
+        //window.location.href = searchName(input)
+        this.setState({
+            didSearch: true
+        });
+    }
     render() {
         return (
             <div>
-                <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch}/> {/* <p>Hello</p> */}
-                <FetchDemo subreddit="ballroom"/>
+                <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch}/> {this.state.didSearch
+                    ? (<Results subreddit="ballroom"/>)
+                    : (
+                        <div></div>
+                    )}
             </div>
         );
     }
-});
+}
 
 ReactDOM.render(
     <App/>, document.getElementById('root'));
