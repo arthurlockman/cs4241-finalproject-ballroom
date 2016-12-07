@@ -191,6 +191,7 @@ function forEveryRound(EVENT_PAGE, ref) {
       var selectorId = next.value
 
       if(selectorId == NO_SELECTOR){
+        // TODO
         continue;
       }
 
@@ -290,7 +291,7 @@ function *eventLinkGenerator($) {
 
   var arr = $('.h5b')
   // TODO just getting the first 5 events
-  for(var i = 0; i < arr.length; i++) {
+  for(var i = 0; i < 5 /*arr.length*/; i++) {
     var element = arr[i]
 
     var ref   = $(element).find('a').attr('href')
