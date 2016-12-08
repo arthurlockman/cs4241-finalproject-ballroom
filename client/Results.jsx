@@ -16,6 +16,13 @@ class Results extends React.Component {
         });
     }
 
+    componentWillUpdate(nextProps) {
+        axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
+            const posts = res.data.data.children.map(obj => obj.data);
+            this.setState({posts});
+        });
+    }
+
     numberList(props) {
         const numbers = props.numbers;
         const listItems = numbers.map((number) => <li>{number}</li>);
@@ -25,7 +32,6 @@ class Results extends React.Component {
     }
 
     restultList(posts) {
-        console.log(posts);
         if (posts.length) {
             posts.map(function(n) {
                 //console.log("POSTS", n);
@@ -44,7 +50,6 @@ class Results extends React.Component {
     }
 
     render() {
-        console.log(this.state.posts);
         return (
             <div>
                 <h1 className="title">{`/r/${this.props.subreddit}`}</h1>

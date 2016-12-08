@@ -9,21 +9,8 @@ import axios from 'axios';
 var matches
 var posts
 
-// const matches = {
-//     'b': [
-//         'ballroom', 'b something', 'be cool'
-//     ],
-//     'ballroo': ['ballroom dance', 'ballroom dico', 'ballroom dance dance']
-//     // ,
-//     // 'macbook p': [
-//     //   'macbook pro 13 case',
-//     //   'macbook pro 15 case',
-//     //   'macbook pro charger'
-//     // ]
-// };
-
-function getSubreddit() {
-    axios.get(`http://www.reddit.com/r/ballroom.json`).then(res => {
+function getSubreddit(sub) {
+    axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
         posts = res.data.data.children.map(obj => obj.data);
         matches = posts.map(function(a) {
             return a.title;
@@ -39,14 +26,14 @@ function searchName(name) {
     }
 }
 
-getSubreddit()
-
 class App extends React.Component {
 
     constructor(props, context) {
         super(props, context);
         this.state = {
-            didSearch: false
+            didSearch: false,
+            detailView: false,
+            searchTerm: ''
         };
         this.onSearch = this.onSearch.bind(this);
     }
@@ -68,15 +55,16 @@ class App extends React.Component {
             return;
         console.info(`Searching "${input}"`);
         //window.location.href = searchName(input)
-        this.setState({
-            didSearch: true
-        });
+        this.setState({didSearch: true});
+        this.setState({searchTerm: input});
+        getSubreddit(input)
     }
     render() {
+        console.log("this.state.searchTerm", this.state.searchTerm);
         return (
             <div>
-                <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch}/> {this.state.didSearch
-                    ? (<Results subreddit="ballroom"/>)
+                <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/> {this.state.didSearch
+                    ? (<Results subreddit={this.state.searchTerm}/>)
                     : (
                         <div></div>
                     )}

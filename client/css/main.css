@@ -1,216 +1,242 @@
-body {
-    font: 110% sans-serif;
-}
-
-input {
-    font-size: 110%;
-    outline: 0;
-}
-
-.center {
-    margin: auto;
-}
-
-.search-bar-wrapper {
-    width: 100%;
-}
-
-@media screen and (min-width: 640px) {
-    .search-bar-wrapper {
-        min-width: 480px;
-        width: 40%;
+        body {
+        font: 110% sans-serif;
     }
-}
-
-.search-bar-field {
-    position: relative;
-}
-
-.search-bar-input {
-    -webkit-appearance: none;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 10px 40px 10px 10px;
-    width: 100%;
-}
-
-.has-suggestions .search-bar-input {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.icon {
-    background-position: center center;
-    background-repeat: no-repeat;
-    border: 0;
-    cursor: pointer;
-    font-size: 0;
-    height: 100%;
-    outline: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 25px;
-}
-
-.search-bar-clear {
-    background-image: url(../img/cancel.svg);
-    background-size: 25%;
-    right: 40px;
-    width: 40px;
-}
-
-.search-bar-submit {
-    background-color: #e5e5e5;
-    background-image: url(../img/search.svg);
-    background-size: 35%;
-    border: 1px solid #ddd;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-    padding: 0 20px;
-    opacity: .8;
-    width: 40px;
-}
-
-.search-bar-submit:hover {
-    opacity: 1;
-}
-
-.is-focused .search-bar-input, .is-focused .search-bar-submit {
-    border-color: #ccc;
-}
-
-.search-bar-suggestions {
-    border: 1px solid #ccc;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    box-sizing: border-box;
-    font-size: 100%;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    top: -1px;
-}
-
-.search-bar-suggestions li {
-    cursor: default;
-    letter-spacing: 0.03em;
-    padding: 12px 7px 12px 10px;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.search-bar-suggestions li:last-child {
-    border: none;
-}
-
-.search-bar-suggestions .highlighted {
-    background: #f5f5f5;
-}
-
-
-/** RESULTS **/
-
-#result-wiki-search-form-input {
-    width: 350px;
-}
-
-.result-list {
-    margin-top: 20px;
-}
-
-.result-title a {
-    color: #2619AF;
-    line-height: 1.2em;
-    font-size: 18px;
-    text-decoration: none;
-}
-
-.result-title a:hover {
-    text-decoration: underline;
-}
-
-.result-title a:visited {
-    color: #670199;
-}
-
-.result-snippet {
-    color: #545454;
-}
-
-.searchmatch {
-    font-weight: bold;
-}
-
-.result-metadata {
-    color: #078307;
-}
-
-.result-9 {
-    margin-bottom: 5em;
-}
-
-.credit {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    text-align: center;
-}
-
-.credit a {
-    text-decoration: none;
-}
-
-.error {
-    margin-top: 4em;
-    line-height: 20px;
-}
-
-.error p {
-    line-height: 10px;
-}
-
-.keyword {
-    font-weight: bold;
-}
-
-.hidden {
-    display: none;
-}
-
-.container {
-    position: relative;
-    width: 100%;
-    max-width: 1140px;
-    margin: 0 auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-
-.column,
-.columns {
-  width: 100%;
-  float: left;
-  box-sizing: border-box; }
-
-@media (min-width: 400px) {
-  .container {
-    width: 85%;
-    padding: 0; } }
-@media (min-width: 550px) {
-  .container {
-    width: 80%; }
-
-  .column,
-  .columns {
-    margin-left: 4%; }
-
-  .column:first-child,
-  .columns:first-child {
-    margin-left: 0; }
-h1.title {
-  text-align: center;
-}
+    
+    input {
+        font-size: 110%;
+        outline: 0;
+    }
+    
+    .center {
+        margin: auto;
+    }
+    
+    .absoluteCenter {
+        position: absolute;
+        top: 30%;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+    
+    .absoluteCenterIcon {
+        position: absolute;
+        top: 40%;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+    
+    .stackDiv {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .search-bar-wrapper {
+        width: 100%;
+    }
+    
+    @media screen and (min-width: 640px) {
+        .search-bar-wrapper {
+            min-width: 480px;
+            width: 40%;
+        }
+    }
+    
+    .search-bar-field {
+        position: relative;
+    }
+    
+    .search-bar-input {
+        -webkit-appearance: none;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 10px 40px 10px 10px;
+        width: 100%;
+    }
+    
+    .has-suggestions .search-bar-input {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .icon {
+        background-position: center center;
+        background-repeat: no-repeat;
+        border: 0;
+        cursor: pointer;
+        font-size: 0;
+        height: 100%;
+        outline: 0;
+        padding: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 25px;
+    }
+    
+    .search-bar-clear {
+        background-image: url(../img/cancel.svg);
+        background-size: 25%;
+        right: 40px;
+        width: 40px;
+    }
+    
+    .search-bar-submit {
+        background-color: #e5e5e5;
+        background-image: url(../img/search.svg);
+        background-size: 35%;
+        border: 1px solid #ddd;
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+        padding: 0 20px;
+        opacity: .8;
+        width: 40px;
+    }
+    
+    .search-bar-submit:hover {
+        opacity: 1;
+    }
+    
+    .is-focused .search-bar-input, .is-focused .search-bar-submit {
+        border-color: #ccc;
+    }
+    
+    .search-bar-suggestions {
+        border: 1px solid #ccc;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        box-sizing: border-box;
+        font-size: 100%;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        top: -1px;
+    }
+    
+    .search-bar-suggestions li {
+        cursor: default;
+        letter-spacing: 0.03em;
+        padding: 12px 7px 12px 10px;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .search-bar-suggestions li:last-child {
+        border: none;
+    }
+    
+    .search-bar-suggestions .highlighted {
+        background: #f5f5f5;
+    }
+    /** RESULTS **/
+    
+    #result-wiki-search-form-input {
+        width: 350px;
+    }
+    
+    .result-list {
+        margin-top: 20px;
+    }
+    
+    .result-title a {
+        color: #2619AF;
+        line-height: 1.2em;
+        font-size: 18px;
+        text-decoration: none;
+    }
+    
+    .result-title a:hover {
+        text-decoration: underline;
+    }
+    
+    .result-title a:visited {
+        color: #670199;
+    }
+    
+    .result-snippet {
+        color: #545454;
+    }
+    
+    .searchmatch {
+        font-weight: bold;
+    }
+    
+    .result-metadata {
+        color: #078307;
+    }
+    
+    .result-9 {
+        margin-bottom: 5em;
+    }
+    
+    .credit {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        text-align: center;
+    }
+    
+    .credit a {
+        text-decoration: none;
+    }
+    
+    .error {
+        margin-top: 4em;
+        line-height: 20px;
+    }
+    
+    .error p {
+        line-height: 10px;
+    }
+    
+    .keyword {
+        font-weight: bold;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    .container {
+        position: relative;
+        width: 100%;
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+    
+    .column, .columns {
+        width: 100%;
+        float: left;
+        box-sizing: border-box;
+    }
+    
+    @media (min-width: 400px) {
+        .container {
+            width: 85%;
+            padding: 0;
+        }
+    }
+    
+    @media (min-width: 550px) {
+        .container {
+            width: 80%;
+        }
+        .column, .columns {
+            margin-left: 4%;
+        }
+        .column:first-child, .columns:first-child {
+            margin-left: 0;
+        }
+        h1.title {
+            text-align: center;
+        }

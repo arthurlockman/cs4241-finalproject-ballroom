@@ -23,12 +23,11 @@ class SearchBar extends React.Component {
             value: ''
         };
     }
-    
+
     componentDidMount() {
         if (this.props.autoFocus) {
             this.refs.input.focus();
         }
-        //console.log("suggestions",this.state.suggestions);
     }
     normalizeInput() {
         return this.state.value.toLowerCase().trim();
@@ -110,11 +109,24 @@ class SearchBar extends React.Component {
         this.search();
         return false;
     }
-    
+
+    shouldCenter(didSearch) {}
+
     render() {
+        let centering = null
+        if (this.props.didSearch) {
+            centering = <div className="search-bar-wrapper absoluteCenter"/>
+        } else {
+            centering = <div className="search-bar-wrapper center"/>
+        }
         /*eslint-disable quotes*/
         return (
-            <div className="search-bar-wrapper center">
+            <div className={classNames(' search-bar-wrapper center', { 'absoluteCenter': !this.props.didSearch })}>
+              {!this.props.didSearch
+                  ? (<h2> <i className="fa fa-search icon-4x" aria-hidden="true"></i> </h2>)
+                  : (
+                      <div></div>
+                  )}
                 <div className={classNames('search-bar-field', {
                     'is-focused': this.state.isFocused
                 }, {
@@ -136,7 +148,8 @@ SearchBar.propTypes = {
     inputName: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
     onSearch: React.PropTypes.func,
-    placeholder: React.PropTypes.string
+    placeholder: React.PropTypes.string,
+    didSearch: React.PropTypes.bool
 };
 
 SearchBar.defaultProps = {
