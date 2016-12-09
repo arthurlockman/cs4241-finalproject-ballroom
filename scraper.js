@@ -4,6 +4,8 @@ var request = require('request')
 var cheerio = require('cheerio')
 var cheerioTableparser = require('cheerio-tableparser')
 var querystring = require('querystring')
+var parser = require('./parser.js');
+
 
 
 module.exports = {
@@ -17,25 +19,32 @@ const COMPETITION_YEAR_SELECTOR = '.h3'
 ROOT_URL = 'http://www.o2cm.com/results/'
 LOG = false
 NO_SELECTOR = -9999;
+PRINT_RESULTS = true
+// COMP_SEARCH_STRING = 'Tufts University Ballroom CompetitionNovember 13th'
+COMP_SEARCH_STRING = 'Tufts'
+
 
 
 /* SCRIPT ENTRANCE */
 var d = new Date();
 var startTime = d.getTime();
 
-scrape()
+scrape().then(function() {
+  d = new Date();
+  var endTime = d.getTime();
 
-d = new Date();
-var endTime = d.getTime();
-
-console.log("Total time: " + (endTime - startTime))
+  console.log('\n\n************************************')
+  console.log("Total time: " + (endTime - startTime) + " ms")
+  console.log('************************************\n\n')
+})
 
 /* END SCRIPT */
+
 
 function scrape() {
 
   // Load the main page
-  loadMainPage_Promise(ROOT_URL)
+  return loadMainPage_Promise(ROOT_URL)
 
   // Extract the competition URLs and perform next step
   .then(forEveryCompetitionPage)
@@ -74,17 +83,21 @@ function forEveryCompetitionPage(ROOT_PAGE) {
       var ref = competitionInfo.ref
 
       // Load each competition page
-      loadCompetitionPage_Promise(ROOT_URL, ref)
+      loadCompetitionPage_Promise(ROOT_URL, ref, competitionInfo)
 
       // Extract the event URLs and perform next step
-      .then(forEveryEventPage)
+      .then(function(tuple) {
+        var COMPETITION_PAGE = tuple[0]
+        var competitionInfo = tuple[1]
+        forEveryEventPage(COMPETITION_PAGE, competitionInfo)
+      })
     }
   }
 }
 
 // ROOT_URL: http://www.o2cm.com/results/
 // ref = event3.asp?event=sib16
-function loadCompetitionPage_Promise(ROOT_URL, ref) {
+function loadCompetitionPage_Promise(ROOT_URL, ref, competitionInfo) {
 
   var details = ref.split('?')
   var eventName = details[1].split('=')[1]
@@ -118,13 +131,13 @@ function loadCompetitionPage_Promise(ROOT_URL, ref) {
       method: 'POST'
     }, function (err, res, body) {
         var COMPETITION_PAGE = cheerio.load(body)
-        resolve(COMPETITION_PAGE)
+        resolve([COMPETITION_PAGE, competitionInfo])
     });
   })
 }
 
 
-function forEveryEventPage(COMPETITION_PAGE) {
+function forEveryEventPage(COMPETITION_PAGE, competitionInfo) {
 
   // Extract the event info from the page
   var gen = eventLinkGenerator(COMPETITION_PAGE)
@@ -135,26 +148,27 @@ function forEveryEventPage(COMPETITION_PAGE) {
       break
     }
     else {
-      // TODO keep track of info here
+      // Keep track of event info here
       var eventInfo = next.value
 
       var ref = eventInfo.ref
 
       // Load a single event into memory
-      loadEventPage_Promise(ref)
+      loadEventPage_Promise(ref, eventInfo)
 
       // Extract the selectors and continue onto the next step
       .then(function(tuple) {
         var EVENT_PAGE = tuple[0]
         var ref = tuple[1]
-        forEveryRound(EVENT_PAGE, ref)
+        var eventInfo = tuple[2]
+        forEveryRound(EVENT_PAGE, ref, eventInfo, competitionInfo)
       })
 
     }
   }
 }
 
-function loadEventPage_Promise(ref) {
+function loadEventPage_Promise(ref, eventInfo) {
 
   var url = ROOT_URL + ref
 
@@ -168,15 +182,14 @@ function loadEventPage_Promise(ref) {
       // var EVENT_PAGE = cheerio.load(fs.readFileSync('event_page.html'))
 
       // Return the page and the url of the page
-      var tuple = [EVENT_PAGE, ref]
-      resolve(tuple)
+      resolve([EVENT_PAGE, ref, eventInfo])
       
     })
 
   })
 }
 
-function forEveryRound(EVENT_PAGE, ref) {
+function forEveryRound(EVENT_PAGE, ref, eventInfo, competitionInfo) {
 
   // Extract the selector info from the page
   var gen = roundSelectorGenerator(EVENT_PAGE)
@@ -199,11 +212,7 @@ function forEveryRound(EVENT_PAGE, ref) {
       loadRoundPage_Promise(ref, selectorId)
 
       // Scape the round
-      .then(function(ROUND_PAGE){
-        // DO SOMETHING HERE
-        console.log(ROUND_PAGE.html())
-      })
-      // .then(scrapeRound)
+      .then((val) => {scrapeRound(val, eventInfo, competitionInfo)})
 
     }
   }
@@ -250,8 +259,20 @@ function loadRoundPage_Promise(ref, selectorId) {
 
 }
 
-function scrapeRound(ROUND_PAGE) {
+function scrapeRound(ROUND_PAGE, eventInfo, competitionInfo) {
 
+  // Parse the round
+  var parsedRound = parser.parsePage(ROUND_PAGE)
+
+  // If it returns an empty string, do nothing. Page not supported
+  if(parsedRound == 'NOT_SUPPORTED') {
+    return
+  }
+
+  // Else add the event info
+  var output = new Info(parsedRound, eventInfo, competitionInfo)
+  if(PRINT_RESULTS) console.log(JSON.stringify(output), null, '\t')
+  
 }
 
 
@@ -262,8 +283,8 @@ function *competitionLinkGenerator($) {
   var competitionInfo = []
 
   var arr = $('table tr')
-  // TODO Extract only the first competition (happens on line 4)
-  for(var i = 0; i < 4 /*arr.length*/; i++) {
+  // REDO Extract only the first competition (happens on line 4)
+  for(var i = 0; i < arr.length; i++) {
     var element = arr[i]
 
     // Check if it is a year
@@ -272,6 +293,10 @@ function *competitionLinkGenerator($) {
     }
     // Else it is competition info
     else {
+
+      if(!($(element).text().trim().includes(COMP_SEARCH_STRING))){
+        continue;
+      }
 
       var ref  =  $(element).find('a').attr('href')
       ,   name =  $(element).find('a').text().trim()
@@ -290,15 +315,149 @@ function *eventLinkGenerator($) {
   var links = []
 
   var arr = $('.h5b')
-  // TODO just getting the first 5 events
-  for(var i = 0; i < 5 /*arr.length*/; i++) {
+  // REDO just getting the first 5 events
+  for(var i = 0; i < arr.length; i++) {
     var element = arr[i]
 
     var ref   = $(element).find('a').attr('href')
-    ,   skill = $(element).find('a').text().trim()
+    ,   text = $(element).find('a').text().trim()
 
-    yield new EventInfo("Amateur", "Adult", skill, "PARSE THIS", ref)
+    var americanOrInternational = isAmerican(text) ? "American" : isInternational(text) ? "International" : "Unknown AoI: "+text 
+    var skill = parseSkill(text)
+    var division = parseDivision(text)
+    var age = parseAge(text)
+
+    yield new EventInfo(division, age, americanOrInternational, skill, "style (check the dances)", ref)
   }
+}
+
+function parseAge(text) {
+
+  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+
+  if(words.map(matchAdult).reduce((a, b) => {return a || b}))
+    return "Adult"
+  else
+    return "Unknown age: " + text
+
+  function matchAdult(word) {
+    return ['adult'].includes(word)
+  }
+}
+
+function parseDivision(text) {
+
+  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+
+  if(words.map(matchAmateur).reduce((a, b) => {return a || b}))
+    return "Amateur"
+  else
+    return "Unknown division: " + text
+
+  function matchAmateur(word) {
+    return ['amateur'].includes(word)
+  }
+}
+
+function parseSkill(text) {
+
+  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+
+  if(words.map(matchNewcomer).reduce((a, b) => {return a || b}))
+    return "Newcomer"
+  else if(words.map(matchBronze).reduce((a, b) => {return a || b}))
+    return "Bronze"
+  else if(words.map(matchSilver).reduce((a, b) => {return a || b}))
+    return "Silver"
+  else if(words.map(matchGold).reduce((a, b) => {return a || b}))
+    return "Gold"
+  else if(words.map(matchOpen).reduce((a, b) => {return a || b}))
+    return "Open"
+  else if(words.map(matchChamp).reduce((a, b) => {return a || b}))
+    return "Champ"
+  else if(words.map(matchSyllabus).reduce((a, b) => {return a || b}))
+    return "Syllabus"
+  else if(words.map(matchPreChamp).reduce((a, b) => {return a || b}))
+    return "Pre-Champ"
+  else
+    return "Unknown skill: " + text
+
+
+
+  function matchNewcomer(word) {
+    return ['newcomer'].includes(word)
+  }
+
+  function matchBronze(word) {
+    return ['bronze'].includes(word)
+  }
+
+  function matchSilver(word) {
+    return ['silver'].includes(word)
+  }
+
+  function matchGold(word) {
+    return ['gold'].includes(word)
+  }
+
+  function matchOpen(word) {
+    return ['open'].includes(word)
+  }
+
+  function matchChamp(word) {
+    return ['champ'].includes(word)
+  }
+
+  function matchSyllabus(word) {
+    return ['syllabus'].includes(word)
+  }
+
+  function matchPreChamp(word) {
+    return ['pre-champ', 'prechamp'].includes(word)
+  }
+
+}
+
+function isInternational(text) {
+
+  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+  return words.map(matchInternationalWords).reduce((a, b) => {return a || b}) 
+
+  function matchInternationalWords(word) {
+
+    var intlWords = [
+      'intl',
+      'inter',
+      'standard',
+      'stnd',
+      'latin',
+      ]
+
+      return intlWords.includes(word)
+
+  }
+
+}
+
+function isAmerican(text) {
+
+  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+  return words.map(matchAmericanWords).reduce((a, b) => {return a || b}) 
+
+  function matchAmericanWords(word) {
+
+    var amerWords = [
+      'am',
+      'american',
+      'rhythm',
+      'amer',
+      'smooth'
+      ]
+
+      return amerWords.includes(word)
+
+  }
+
 }
 
 function *roundSelectorGenerator($) {
@@ -330,11 +489,20 @@ class CompetitionInfo {
 }
 
 class EventInfo {
-  constructor(division, age, skill, style, ref) {
+  constructor(division, age, americanOrInternational, skill, style, ref) {
     this.division = division
     this.age = age
     this.skill = skill
     this.style = style
     this.ref = ref
+    this.americanOrInternational = americanOrInternational
+  }
+}
+
+class Info {
+  constructor(roundInfo, eventInfo, competitionInfo) {
+    this.roundInfo = roundInfo
+    this.eventInfo = eventInfo
+    this.competitionInfo = competitionInfo
   }
 }
