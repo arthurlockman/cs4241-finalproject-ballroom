@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SearchBar from './src/SearchBar.jsx';
 import Results from './Results.jsx';
+import DetailView from './DetailView.jsx';
 import axios from 'axios';
 
 var matches
@@ -36,6 +37,7 @@ class App extends React.Component {
             searchTerm: ''
         };
         this.onSearch = this.onSearch.bind(this);
+        this.showDetailView = this.showDetailView.bind(this);
     }
 
     onChange(input, resolve) {
@@ -58,17 +60,47 @@ class App extends React.Component {
         this.setState({didSearch: true});
         this.setState({searchTerm: input});
         getSubreddit(input)
+        // this.refs.results.refreshResults()
     }
+
+    showDetailView(link) {
+        console.log('showDetailView');
+        this.setState({detailView: true});
+    }
+
+    switchView() {
+        if (this.state.detailView) {
+            return (
+                <div>
+                    <DetailView/>
+                </div>
+            )
+        } else if (this.state.didSearch) {
+            return (
+                <div>
+                    <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/>
+                    <Results subreddit={this.state.searchTerm} onSelect={this.showDetailView}/>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/>
+                </div>
+            )
+        }
+    }
+
     render() {
         console.log("this.state.searchTerm", this.state.searchTerm);
-        return (
-            <div>
-                <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/> {this.state.didSearch
-                    ? (<Results subreddit={this.state.searchTerm}/>)
-                    : (
-                        <div></div>
-                    )}
-            </div>
+        return (this.switchView()
+        // <div>
+        //     <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/> {this.state.didSearch
+        //         ? (<Results subreddit={this.state.searchTerm}/>)
+        //         : (
+        //             <div></div>
+        //         )}
+        // </div>
         );
     }
 }

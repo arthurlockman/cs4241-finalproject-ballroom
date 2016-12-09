@@ -8,15 +8,22 @@ class Results extends React.Component {
         this.state = this.initialState = {
             posts: []
         };
+        this.refreshResults = this.refreshResults.bind(this);
     }
+    
+    refreshResults() {
+      console.log("refresh log");
+      axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
+          const posts = res.data.data.children.map(obj => obj.data);
+          this.setState({posts: posts});
+      });
+    }
+    
     componentDidMount() {
-        axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
-            const posts = res.data.data.children.map(obj => obj.data);
-            this.setState({posts});
-        });
+        this.refreshResults()
     }
 
-    componentWillUpdate(nextProps) {
+    componentDidUpdate(nextProps) {
         axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
             const posts = res.data.data.children.map(obj => obj.data);
             this.setState({posts});
@@ -49,7 +56,17 @@ class Results extends React.Component {
         }
     }
 
+    onSelect(e) {
+      console.log("onSelect");
+        e.preventDefault();
+        if (this.props.onSelect) {
+            this.props.onSelect();
+        }
+        return false;
+    }
+
     render() {
+        var onClick = this.onSelect;
         return (
             <div>
                 <h1 className="title">{`/r/${this.props.subreddit}`}</h1>
@@ -64,7 +81,7 @@ class Results extends React.Component {
                                     <div className='result-list'></div>
                                     <br/>
                                     <span className='result-title'>
-                                        <a href={post.url} target='_blank'>{post.title}</a>
+                                        <a onClick={onClick = this.onSelect.bind(this)} href={post.url} target='_blank'>{post.title}</a>
                                     </span>
                                     <br/>
                                     <span className='result-snippet'>{post.selftext}</span>
@@ -80,7 +97,9 @@ class Results extends React.Component {
         );
     }
 }
-
+Results.propTypes = {
+    onSelect: React.PropTypes.func
+};
 export default Results;
 
 // ReactDOM.render(
