@@ -6,6 +6,7 @@ import SearchBar from './src/SearchBar.jsx';
 import Results from './Results.jsx';
 import DetailView from './DetailView.jsx';
 import axios from 'axios';
+import {Router, Route, Link, browserHistory} from 'react-router'
 
 var matches
 var posts
@@ -34,6 +35,7 @@ class App extends React.Component {
         this.state = {
             didSearch: false,
             detailView: false,
+            postDetail: '',
             searchTerm: ''
         };
         this.onSearch = this.onSearch.bind(this);
@@ -63,8 +65,8 @@ class App extends React.Component {
         // this.refs.results.refreshResults()
     }
 
-    showDetailView(link) {
-        console.log('showDetailView');
+    showDetailView(post) {
+        this.setState({postDetail: post});
         this.setState({detailView: true});
     }
 
@@ -72,7 +74,7 @@ class App extends React.Component {
         if (this.state.detailView) {
             return (
                 <div>
-                    <DetailView/>
+                    <DetailView postDetail={this.state.postDetail}/>
                 </div>
             )
         } else if (this.state.didSearch) {
@@ -93,17 +95,15 @@ class App extends React.Component {
 
     render() {
         console.log("this.state.searchTerm", this.state.searchTerm);
-        return (this.switchView()
-        // <div>
-        //     <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/> {this.state.didSearch
-        //         ? (<Results subreddit={this.state.searchTerm}/>)
-        //         : (
-        //             <div></div>
-        //         )}
-        // </div>
-        );
+        return (this.switchView());
     }
 }
 
 ReactDOM.render(
-    <App/>, document.getElementById('root'));
+    <Router history={browserHistory}>
+    <Route path="/" component={App}>
+        <Route path="search" component={Results}/>
+        <Route path="search/:query" component={Results}/>
+        <Route path="info" component={DetailView}/>
+    </Route>
+</Router>, document.getElementById('root'));

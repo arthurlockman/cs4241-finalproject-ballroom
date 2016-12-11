@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import {Link} from 'react-router'
+import {browserHistory} from 'react-router'
 
 class Results extends React.Component {
     constructor(props) {
@@ -10,15 +12,15 @@ class Results extends React.Component {
         };
         this.refreshResults = this.refreshResults.bind(this);
     }
-    
+
     refreshResults() {
-      console.log("refresh log");
-      axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
-          const posts = res.data.data.children.map(obj => obj.data);
-          this.setState({posts: posts});
-      });
+        console.log("refresh log");
+        axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
+            const posts = res.data.data.children.map(obj => obj.data);
+            this.setState({posts: posts});
+        });
     }
-    
+
     componentDidMount() {
         this.refreshResults()
     }
@@ -56,11 +58,13 @@ class Results extends React.Component {
         }
     }
 
-    onSelect(e) {
-      console.log("onSelect");
+    onSelect(post, e) {
         e.preventDefault();
+
+        const path = `/search/` + post.title
+        //browserHistory.push(path)
         if (this.props.onSelect) {
-            this.props.onSelect();
+            this.props.onSelect(post);
         }
         return false;
     }
@@ -70,9 +74,7 @@ class Results extends React.Component {
         return (
             <div>
                 <h1 className="title">{`/r/${this.props.subreddit}`}</h1>
-                {/* {this.state.posts.map(post => <button>
-                    <a key={post.id}>{post.title}</a>
-                </button>)} */}
+
                 <div className="container">
                     <section className="search-results">
                         <div className="one-half column">
@@ -81,7 +83,9 @@ class Results extends React.Component {
                                     <div className='result-list'></div>
                                     <br/>
                                     <span className='result-title'>
-                                        <a onClick={onClick = this.onSelect.bind(this)} href={post.url} target='_blank'>{post.title}</a>
+                                        {/* <Link to={`/search`} >{post.title}</Link> */}
+                                        <a onClick={onClick = this.onSelect.bind(this, post)} href={post.url} target='_blank'>{post.title}
+                                        </a>
                                     </span>
                                     <br/>
                                     <span className='result-snippet'>{post.selftext}</span>
