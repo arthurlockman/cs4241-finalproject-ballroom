@@ -1,0 +1,59 @@
+*********************************************************************************************************
+How do you use O2CM? Select all that apply.
+
+Look up results for self
+Look up results for another
+Look up results for team
+Look up results for an unknown competitor
+Other (Please specify)
+
+*********************************************************************************************************
+
+On a scale of 1-5, how easy is it to find your desired results?
+1 - Very Easy / Uncomplicated
+2
+3 - Reasonable
+4
+5 - Very Difficult / Complicated
+
+*********************************************************************************************************
+
+How would you *initially* prefer to filter results? Select up to three.
+
+By competiton
+By name
+By style
+By skill (newcomer, bronze, etc)
+By age
+By division (amerateur/pro)
+Other (Please specify)
+
+*********************************************************************************************************
+
+On a scale of 1-5, how easy is it to recognize/understand the results?
+1 - Can immedietly recognize/understand the results
+2
+3 - Can reasonably recognize/understand results
+4
+5 - Have difficulty recognizing/understanding the results
+
+*********************************************************************************************************
+
+Do you have any suggestions for better displaying the results? 
+
+*********************************************************************************************************
+
+On a scale of 1-3, what is your interest in tracking results over time? 
+1 - Very interested
+2 - Moderatly interested
+3 - Not interested
+
+*********************************************************************************************************
+
+What other information would you like included on the website? 
+
+*********************************************************************************************************
+
+Do you have any other suggestions or comments about the website? 
+
+*********************************************************************************************************

@@ -10,7 +10,7 @@ module.exports = {
 }
 
 // parseURL('').then(function(val) {
-// 	console.log(JSON.stringify(val))
+	// console.log(JSON.stringify(val))
 // })
 
 function parseURL(url) {
@@ -146,38 +146,33 @@ function parseCouplesAndJudges($) {
 	$('body .t1n').last().find('tr').each(function(i, elt) {
 
 		// Parse the text and remove the weird whitespace
-		var line = $(elt).text().replace(/[^\S ]+/g, ' ')
+		var line = $(elt).text().trim().replace(/[^\S ]+/g, ' ')
 
-		// Split it on the hypen. Not tracking location
-		var info = line.split('-')
-
-		var nameInfo = info[0].trim()
+		// If it is an empty string, continue the loop
+		if(line == '') {
+			return true
+		}
 
 		// Is parsing couples or judges?
-		if(nameInfo == 'Couples') {
+		if(line.includes('Couples')) {
 			isCouples = true;
 			isJudges = false;
 			return true;
 		} 	
-		else if(nameInfo == 'Judges') {
+		else if(line.includes('Judges')) {
 			isJudges = true;
 			isCouples = false;
 			return true;
 		}
 
-		// If it is an empty string, continue the loop
-		if(nameInfo == '') {
-			return;
-		}
-
 		// If parsing couples
 		if(isCouples == true) {
 			
-			// Assuming the competitor number will always be of length 3
-			var number = nameInfo.slice(0, 3)
+			// Extract the couple number
+			var number = line.match(/\d+/g)[0]
 
 			// Remove comma and whitespace bewteen competitors
-			var names = nameInfo.slice(3).trim().split(/\s*,\s/g)
+			var names = line.split('-')[0].trim().replace(/\s+/g, ' ').slice(number.length).split(/\s*,\s/g)
 
 			couples.push(new Couple(names[0], names[1], number))
 
@@ -186,10 +181,10 @@ function parseCouplesAndJudges($) {
 		// If parsing judges
 		else if(isJudges == true) {
 			
-			// Assuming the number will always be of length 2
-			var number = nameInfo.slice(0,2)
+			// Extract the number
+			var number = line.match(/\d+/g)[0]
 
-			var name = nameInfo.slice(2).trim()
+			var name = line.split(',')[0].trim().replace(/\s+/g, ' ').slice(number.length)
 
 			judges.push(new Judge(name, number))
 		} 

@@ -13,30 +13,34 @@ module.exports = {
 }
 
 /* GLOBALS */
-const COMPETITION_YEAR_SELECTOR = '.h3'
-,     COMPETITION_DATE_SELECTOR = 'td:nth-child(3)'
-
 ROOT_URL = 'http://www.o2cm.com/results/'
-LOG = false
 NO_SELECTOR = -9999;
 PRINT_RESULTS = true
+PRINT_TIME = true
 // COMP_SEARCH_STRING = 'Tufts University Ballroom CompetitionNovember 13th'
-COMP_SEARCH_STRING = 'Tufts'
-
+// COMP_SEARCH_STRING = 'Tufts'
+// COMP_SEARCH_STRING = 'Harvard'
+// COMP_SEARCH_STRING = 'Worcester'
+// COMP_SEARCH_STRING = 'Brown'
+COMP_SEARCH_STRING = 'MIT'
 
 
 /* SCRIPT ENTRANCE */
 var d = new Date();
 var startTime = d.getTime();
 
-scrape().then(function() {
+process.on('exit', function() {
   d = new Date();
   var endTime = d.getTime();
 
-  console.log('\n\n************************************')
-  console.log("Total time: " + (endTime - startTime) + " ms")
-  console.log('************************************\n\n')
-})
+  if(PRINT_TIME) {
+    console.log('\n\n************************************')
+    console.log("Total time: " + (endTime - startTime) + " ms")
+    console.log('************************************\n\n')
+  }
+});
+
+scrape()
 
 /* END SCRIPT */
 
@@ -271,7 +275,7 @@ function scrapeRound(ROUND_PAGE, eventInfo, competitionInfo) {
 
   // Else add the event info
   var output = new Info(parsedRound, eventInfo, competitionInfo)
-  if(PRINT_RESULTS) console.log(JSON.stringify(output), null, '\t')
+  if(PRINT_RESULTS) console.log(JSON.stringify(output, null, '\t'))
   
 }
 
@@ -288,7 +292,7 @@ function *competitionLinkGenerator($) {
     var element = arr[i]
 
     // Check if it is a year
-    if($(element).find(COMPETITION_YEAR_SELECTOR).text() != '') {
+    if($(element).find('.h3').text() != '') {
       year = $(element).text().trim()
     }
     // Else it is competition info
@@ -300,7 +304,7 @@ function *competitionLinkGenerator($) {
 
       var ref  =  $(element).find('a').attr('href')
       ,   name =  $(element).find('a').text().trim()
-      ,   date =  $(element).find(COMPETITION_DATE_SELECTOR).text().trim()
+      ,   date =  $(element).find('td:nth-child(3)').text().trim()
 
       // Ensure no gibberish
       if(!(name == '' || date == '' || year == '' || ref == 'undefined')){
@@ -322,46 +326,42 @@ function *eventLinkGenerator($) {
     var ref   = $(element).find('a').attr('href')
     ,   text = $(element).find('a').text().trim()
 
-    var americanOrInternational = isAmerican(text) ? "American" : isInternational(text) ? "International" : "Unknown AoI: "+text 
-    var skill = parseSkill(text)
-    var division = parseDivision(text)
-    var age = parseAge(text)
+    var words = text.toLowerCase().replace(/\./g, '').replace(/\*/g, '').split(' ')
+
+    var americanOrInternational = isAmerican(words) ? "American" : isInternational(words) ? "International" : "Unknown AoI: "+text 
+    var skill = parseSkill(words)
+    var division = parseDivision(words)
+    var age = parseAge(words)
 
     yield new EventInfo(division, age, americanOrInternational, skill, "style (check the dances)", ref)
   }
 }
 
-function parseAge(text) {
-
-  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+function parseAge(words) {
 
   if(words.map(matchAdult).reduce((a, b) => {return a || b}))
     return "Adult"
   else
-    return "Unknown age: " + text
+    return "Unknown age: " + words
 
   function matchAdult(word) {
     return ['adult'].includes(word)
   }
 }
 
-function parseDivision(text) {
-
-  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+function parseDivision(words) {
 
   if(words.map(matchAmateur).reduce((a, b) => {return a || b}))
     return "Amateur"
   else
-    return "Unknown division: " + text
+    return "Unknown division: " + words
 
   function matchAmateur(word) {
     return ['amateur'].includes(word)
   }
 }
 
-function parseSkill(text) {
-
-  var words = text.toLowerCase().replace(/\./g, '').split(' ')
+function parseSkill(words) {
 
   if(words.map(matchNewcomer).reduce((a, b) => {return a || b}))
     return "Newcomer"
@@ -379,10 +379,20 @@ function parseSkill(text) {
     return "Syllabus"
   else if(words.map(matchPreChamp).reduce((a, b) => {return a || b}))
     return "Pre-Champ"
+  else if(words.map(matchNovice).reduce((a, b) => {return a || b}))
+    return "Novice"
+  else if(words.map(matchBeginner).reduce((a, b) => {return a || b}))
+    return "Beginner"
+  else if(words.map(matchIntermediate).reduce((a, b) => {return a || b}))
+    return "Intermediate"
+  else if(words.map(matchAdvanced).reduce((a, b) => {return a || b}))
+    return "Advanced"
   else
-    return "Unknown skill: " + text
+    return "Unknown skill: " + words
 
-
+  function matchNovice(word) {
+    return ['novice'].includes(word)
+  }
 
   function matchNewcomer(word) {
     return ['newcomer'].includes(word)
@@ -405,7 +415,7 @@ function parseSkill(text) {
   }
 
   function matchChamp(word) {
-    return ['champ'].includes(word)
+    return ['champ', 'championship'].includes(word)
   }
 
   function matchSyllabus(word) {
@@ -416,11 +426,22 @@ function parseSkill(text) {
     return ['pre-champ', 'prechamp'].includes(word)
   }
 
+  function matchBeginner(word) {
+    return ['beginner'].includes(word)
+  }
+
+  function matchIntermediate(word) {
+    return ['intermediate'].includes(word)
+  }
+
+  function matchAdvanced(word) {
+    return ['advanced'].includes(word)
+  }
+
 }
 
-function isInternational(text) {
+function isInternational(words) {
 
-  var words = text.toLowerCase().replace(/\./g, '').split(' ')
   return words.map(matchInternationalWords).reduce((a, b) => {return a || b}) 
 
   function matchInternationalWords(word) {
@@ -439,9 +460,8 @@ function isInternational(text) {
 
 }
 
-function isAmerican(text) {
+function isAmerican(words) {
 
-  var words = text.toLowerCase().replace(/\./g, '').split(' ')
   return words.map(matchAmericanWords).reduce((a, b) => {return a || b}) 
 
   function matchAmericanWords(word) {
