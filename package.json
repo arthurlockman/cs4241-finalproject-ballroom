@@ -11,7 +11,9 @@
     "cheerio": "^0.22.0",
     "cheerio-tableparser": "^1.0.1",
     "express": "^4.14.0",
+    "firebase-admin": "^4.0.4",
     "form-data": "^2.1.2",
-    "form-scraper": "0.0.4"
+    "form-scraper": "0.0.4",
+    "handlebars": "^4.0.6"
   }
 }
