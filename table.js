@@ -1,9 +1,3 @@
-var json = require('./merp.json');
-var numDances = json.dances.length
-var competitionName= json.competitionName
-var competitionDate = json.competitionDate
-var roundName = json.roundName
-
 
 main()
 
@@ -14,6 +8,12 @@ function main() {
 
 
 function createHTML() {
+
+	var json = require('./merp.json');
+	var numDances = json.dances.length
+	var competitionName= json.competitionName
+	var competitionDate = json.competitionDate
+	var roundName = json.roundName
 
 	html = `
 		<html>
@@ -33,7 +33,7 @@ function createHTML() {
 				${roundName}
 			</h1>
 			<br>
-				${createTables()}
+				${createTables(numDances, json)}
 			</body>
 		</html>
 	`
@@ -43,18 +43,18 @@ function createHTML() {
 
 }
 
-function createTables() {
+function createTables(numDances, json) {
 
 	var html = ''
 
 	for(var i = 0; i < numDances; i++) {
-		html += createTable(json.dances[i])
+		html += createTable(json.dances[i], numDances)
 	}
 
 	return html
 }
 
-function createTable(dance) {
+function createTable(dance, numDances) {
 
 	var rowSpan = Math.floor(12 / numDances);
 	var danceName = dance.danceName
@@ -125,14 +125,14 @@ function createRows(dance) {
 	var html = ''
 
 	for(var i = 0; i < totalMarkArray.length; i++) {
-		html += createRow(dance.competitors[totalMarkArray[i][0]])
+		html += createRow(dance.competitors[totalMarkArray[i][0]], i)
 	}
 
 	return html
 
 }
 
-function createRow(coupleInfo) {
+function createRow(coupleInfo, index) {
 
 	var name_1 = coupleInfo.name_1
 	var name_2 = coupleInfo.name_2
