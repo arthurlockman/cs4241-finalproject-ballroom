@@ -1,35 +1,43 @@
-var http = require('http')
-  , fs   = require('fs')
-  , url  = require('url')
-  , port = 8080
-  , scraper = require('./scraper.js');
+var http    = require('http')
+  , fs      = require('fs')
+  , url     = require('url')
+  , port    = 8080
+  , scraper = require('./scraper.js')
+  , admin   = require('firebase-admin')
+  , express = require('express')
+  , app     = express()
 
-scraper.scrape('http://www.o2cm.com/results/')
-var server = http.createServer (function (req, res) {
-  var uri = url.parse(req.url)
+if (process.env.FIREBASE_KEY) {
+  admin.initializeApp({
+    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_KEY)),
+    databaseURL: "https://webware-final-ajlockman.firebaseio.com"
+  });
+} else {
+  admin.initializeApp({
+    credential: admin.credential.cert("firebase.json"),
+    databaseURL: "https://webware-final-ajlockman.firebaseio.com"
+  });
+}
 
-  switch( uri.pathname ) {
-    case '/':
-      sendFile(res, 'index.html')
-      break
-    case '/index.html':
-      sendFile(res, 'index.html')
-      break
-    default:
-      res.end('404 not found')
-  }
-})
+// Firebase Query Methods
+// TODO: implement firebase queries
 
-server.listen(process.env.PORT || port);
-console.log('listening on 8080')
 
-// subroutines
+// Express REST API
+// TODO: implement REST API
 
-function sendFile(res, filename) {
 
-  fs.readFile(filename, function(error, content) {
+// Express Web Site
+app.get('/', function(req, res) {
+  fs.readFile('index.html', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
     res.end(content, 'utf-8')
   })
+})
 
-}
+// Express setup
+var server = app.listen(process.env.PORT || port, function () {
+  var host = server.address().address
+  var port = server.address().port
+  console.log("Server listening at http://%s:%s", host, port)
+})
