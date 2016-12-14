@@ -99,7 +99,8 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competitor"
     }
     table.push(d)
-    autocompleteStrings.push(competitors[i])
+    if (competitors[i] != null)
+      autocompleteStrings.push(competitors[i])
   }
   for (i = 0; i < years.length; i++) {
     var d = {
@@ -109,7 +110,8 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competition"
     }
     table.push(d)
-    autocompleteStrings.push(name + " " + years[i])
+    if (name != null && years[i] != null)
+      autocompleteStrings.push(name + " " + years[i])
   }
   return table
 }
@@ -237,6 +239,10 @@ function buildDataForCompetition(competition, year) {
   return(JSON.stringify(r))
 }
 
+function getCompetitorInfo(competitorName) {
+  //TODO: finish this function
+}
+
 // Express REST API
 // TODO: implement REST API
 router.route('/competition/:year/:comp_id/:round_name/:skill').get(function(req, res) {
@@ -333,8 +339,7 @@ router.route('/search/:query').get(function(req, res) {
 
 router.route('/competitor/:competitor_name').get(function(req, res) {
   var name = req.params.competitor_name
-  res.send(name)
-  // TODO: finish this method
+  res.send(getCompetitorInfo(name))
 })
 
 router.route('/autocomplete').get(function(req, res) {
