@@ -31,6 +31,7 @@ var brown = []
 // loadDataForCompetition('brown')
 var harvard = []
 // loadDataForCompetition('harvard')
+var searchTable = buildSearchTable(worcester, tufts, mit, brown, harvard)
 
 // Firebase Query Methods
 function loadDataForCompetition(compName) {
@@ -58,7 +59,21 @@ function loadDataForCompetition(compName) {
 }
 
 // Dataset building Methods
-function buildDataForRound(competition, roundName, year) {
+function buildSearchTable() {
+  var table = []
+  for (i = 0; i < arguments.length; i++) {
+    var comp = arguments[i]
+    var d = {
+      "name": "temp" + i,
+      "link": "/api/temp",
+      "type": "temp"
+    }
+    table.push(d)
+  }
+  return table
+}
+
+function buildDataForRound(competition, roundName, year, skill) {
   var rounds = []
   var dances = []
   var rne = ""
@@ -67,7 +82,9 @@ function buildDataForRound(competition, roundName, year) {
     var round = competition[i]
     var roundNameExtracted = round.roundInfo[0].roundName
     var roundYear = round.competitionInfo.year
-    if (roundName.toLowerCase() == roundNameExtracted.toLowerCase() && roundYear == year)
+    var roundSkill = round.eventInfo.skill
+    if (roundName.toLowerCase().replace('.', '/') == roundNameExtracted.toLowerCase() && roundYear == year
+        && roundSkill.toLowerCase() == skill.toLowerCase())
     {
       rounds.push(round)
       rne = roundNameExtracted
@@ -109,10 +126,33 @@ function buildDataForRound(competition, roundName, year) {
     "competitionName": competition[0].competitionInfo.name,
     "competitionDate": competition[0].competitionInfo.date,
     "roundName": rne,
-    "skill": competition[0].eventInfo.skill,
+    "skill": rounds[0].eventInfo.skill,
     "dances": compDances
   }
   return(JSON.stringify(returnData))
+}
+
+function buildDataForRoundTop(competition, roundName, year) {
+  var rounds = []
+  var dances = []
+  var rne = ""
+  var compDances = []
+  var roundSkills = new Set()
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    var roundNameExtracted = round.roundInfo[0].roundName
+    var roundYear = round.competitionInfo.year
+    var roundSkill = round.eventInfo.skill
+    if (roundName.toLowerCase().replace('.', '/') == roundNameExtracted.toLowerCase() && roundYear == year)
+    {
+      roundSkills.add(roundSkill)
+      rne = roundNameExtracted
+    }
+  }
+  var r = {
+    skills: Array.from(roundSkills)
+  }
+  return(JSON.stringify(r))
 }
 
 function buildDataForCompetition(competition, year) {
@@ -131,7 +171,7 @@ function buildDataForCompetition(competition, year) {
   for (i = 0; i < r.length; i++) {
     var round = r[i]
     var roundNameExtracted = round.roundInfo[0].roundName
-    rounds.add(roundNameExtracted)
+    rounds.add(roundNameExtracted.replace('/', '.'))
     for (j = 0; j < round.roundInfo.length; j++) {
       var element = round.roundInfo[j]
       competitors.add(element.name_1)
@@ -157,22 +197,47 @@ function buildDataForCompetition(competition, year) {
 
 // Express REST API
 // TODO: implement REST API
+router.route('/competition/:year/:comp_id/:round_name/:skill').get(function(req, res) {
+  switch (req.params.comp_id){
+    case 'worcester':
+      res.send(buildDataForRound(worcester, req.params.round_name, req.params.year, req.params.skill))
+      break
+    case 'tufts':
+      res.send(buildDataForRound(tufts, req.params.round_name, req.params.year, req.params.skill))
+      break
+    case 'mit':
+      res.send(buildDataForRound(mit, req.params.round_name, req.params.year, req.params.skill))
+      break
+    case 'brown':
+      res.send(buildDataForRound(brown, req.params.round_name, req.params.year, req.params.skill))
+      break
+    case 'harvard':
+      res.send(buildDataForRound(harvard, req.params.round_name, req.params.year, req.params.skill))
+      break
+    default:
+      var d = {
+        "response": "no data found"
+      }
+      res.send(d)
+  }
+})
+
 router.route('/competition/:year/:comp_id/:round_name').get(function(req, res) {
   switch (req.params.comp_id){
     case 'worcester':
-      res.send(buildDataForRound(worcester, req.params.round_name, req.params.year))
+      res.send(buildDataForRoundTop(worcester, req.params.round_name, req.params.year))
       break
     case 'tufts':
-      res.send(buildDataForRound(tufts, req.params.round_name, req.params.year))
+      res.send(buildDataForRoundTop(tufts, req.params.round_name, req.params.year))
       break
     case 'mit':
-      res.send(buildDataForRound(mit, req.params.round_name, req.params.year))
+      res.send(buildDataForRoundTop(mit, req.params.round_name, req.params.year))
       break
     case 'brown':
-      res.send(buildDataForRound(brown, req.params.round_name, req.params.year))
+      res.send(buildDataForRoundTop(brown, req.params.round_name, req.params.year))
       break
     case 'harvard':
-      res.send(buildDataForRound(harvard, req.params.round_name, req.params.year))
+      res.send(buildDataForRoundTop(harvard, req.params.round_name, req.params.year))
       break
     default:
       var d = {
@@ -207,6 +272,21 @@ router.route('/competition/:year/:comp_id').get(function(req, res) {
   }
 })
 
+router.route('/search/:query').get(function(req, res) {
+  var query = req.params.query
+  var r = []
+  console.log(query)
+  console.log(JSON.stringify(searchTable))
+  for (i = 0; i < searchTable.length; i++) {
+    val = searchTable[i]
+    if (val.name.indexOf(query) > -1)
+    {
+      r.push(val)
+    }
+  }
+  res.send(JSON.stringify(r))
+})
+
 // Express Web Site
 app.get('/', function(req, res) {
   fs.readFile('index.html', function(error, content) {
@@ -220,6 +300,12 @@ var server = app.listen(process.env.PORT || port, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Server listening at http://%s:%s", host, port)
+})
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next()
 })
 
 app.use('/api', router)
