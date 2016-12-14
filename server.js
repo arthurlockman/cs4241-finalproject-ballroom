@@ -31,6 +31,7 @@ var brown = []
 // loadDataForCompetition('brown')
 var harvard = []
 // loadDataForCompetition('harvard')
+var searchTable = buildSearchTable(worcester, tufts, mit, brown, harvard)
 
 // Firebase Query Methods
 function loadDataForCompetition(compName) {
@@ -58,6 +59,20 @@ function loadDataForCompetition(compName) {
 }
 
 // Dataset building Methods
+function buildSearchTable() {
+  var table = []
+  for (i = 0; i < arguments.length; i++) {
+    var comp = arguments[i]
+    var d = {
+      "name": "temp" + i,
+      "link": "/api/temp",
+      "type": "temp"
+    }
+    table.push(d)
+  }
+  return table
+}
+
 function buildDataForRound(competition, roundName, year, skill) {
   var rounds = []
   var dances = []
@@ -257,6 +272,21 @@ router.route('/competition/:year/:comp_id').get(function(req, res) {
   }
 })
 
+router.route('/search/:query').get(function(req, res) {
+  var query = req.params.query
+  var r = []
+  console.log(query)
+  console.log(JSON.stringify(searchTable))
+  for (i = 0; i < searchTable.length; i++) {
+    val = searchTable[i]
+    if (val.name.indexOf(query) > -1)
+    {
+      r.push(val)
+    }
+  }
+  res.send(JSON.stringify(r))
+})
+
 // Express Web Site
 app.get('/', function(req, res) {
   fs.readFile('index.html', function(error, content) {
@@ -270,6 +300,12 @@ var server = app.listen(process.env.PORT || port, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Server listening at http://%s:%s", host, port)
+})
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next()
 })
 
 app.use('/api', router)
