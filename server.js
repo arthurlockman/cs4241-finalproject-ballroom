@@ -2,7 +2,6 @@ var http    = require('http')
   , fs      = require('fs')
   , url     = require('url')
   , port    = 8080
-  , scraper = require('./scraper.js')
   , admin   = require('firebase-admin')
   , express = require('express')
   , app     = express()
@@ -18,6 +17,9 @@ if (process.env.FIREBASE_KEY) {
     databaseURL: "https://webware-final-ajlockman.firebaseio.com"
   });
 }
+
+var db = admin.database()
+var ref = db.ref("/") //use ref to get database objects
 
 // Firebase Query Methods
 // TODO: implement firebase queries
