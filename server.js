@@ -60,7 +60,59 @@ function loadDataForCompetition(compName) {
 
 // Dataset building Methods
 function buildDataForRound(competition, roundName) {
-  return(competition)
+  var rounds = []
+  var dances = []
+  var rne = ""
+  var compDances = []
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    var roundNameExtracted = round.roundInfo[0].roundName
+    if (roundName.toLowerCase() == roundNameExtracted.toLowerCase())
+    {
+      rounds.push(round)
+      rne = roundNameExtracted
+    }
+  }
+  for (i = 0; i < rounds.length; i++) {
+    var round = rounds[i]
+    for (j = 0; j < round.roundInfo.length; j++) {
+      var dance = round.roundInfo[j]
+      if (!dances[dance.dances[0].danceName]){
+        dances[dance.dances[0].danceName] = []
+      }
+      dances[dance.dances[0].danceName].push(dance)
+    }
+  }
+  for (dance in dances) {
+    var competitors = []
+    for (i = 0; i < dances[dance].length; i++)
+    {
+      var d = dances[dance][i]
+      var nc = {
+        "name_1": d.name_1,
+        "name_2": d.name_2,
+        "coupleNumber": d.coupleNumber,
+        "advanced": d.advance,
+        "totalMarks": d.dances[0].totalMarks,
+        "marks": d.dances[0].judgeMarkData
+      }
+      competitors.push(nc)
+    }
+    var rd = {
+      "danceName": dance,
+      "competitors": competitors
+    }
+    compDances.push(rd)
+  }
+
+  var returnData = {
+    "competitionName": competition[0].competitionInfo.name,
+    "competitionDate": competition[0].competitionInfo.date,
+    "roundName": rne,
+    "skill": competition[0].eventInfo.skill,
+    "dances": compDances
+  }
+  return(JSON.stringify(returnData))
 }
 
 // Express REST API
