@@ -24,16 +24,15 @@ var worcesterRef = db.ref("/worcester")
 var worcester = []
 loadDataForCompetition('worcester')
 var tufts = []
-loadDataForCompetition('tufts')
+// loadDataForCompetition('tufts')
 var mit = []
-loadDataForCompetition('mit')
+// loadDataForCompetition('mit')
 var brown = []
-loadDataForCompetition('brown')
+// loadDataForCompetition('brown')
 var harvard = []
-loadDataForCompetition('harvard')
+// loadDataForCompetition('harvard')
 
 // Firebase Query Methods
-// TODO: implement firebase queries
 function loadDataForCompetition(compName) {
   console.log('Loading ' + compName)
   db.ref(compName).once('value', function(v) {
@@ -115,6 +114,37 @@ function buildDataForRound(competition, roundName) {
   return(JSON.stringify(returnData))
 }
 
+function buildDataForCompetition(competition) {
+  var rounds = new Set()
+  var competitors = new Set()
+  var judges = new Set()
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    var roundNameExtracted = round.roundInfo[0].roundName
+    rounds.add(roundNameExtracted)
+    for (j = 0; j < round.roundInfo.length; j++) {
+      var element = round.roundInfo[j]
+      competitors.add(element.name_1)
+      competitors.add(element.name_2)
+      var jmd = element.dances[0].judgeMarkData
+      for (judge in jmd) {
+        judges.add(judge)
+      }
+    }
+  }
+  rounds = Array.from(rounds)
+  competitors = Array.from(competitors)
+  judges = Array.from(judges)
+  var r = {
+    "competitionName": competition[0].competitionInfo.name,
+    "competitionDate": competition[0].competitionInfo.date,
+    "rounds": rounds,
+    "competitors": competitors,
+    "judges": judges
+  }
+  return(JSON.stringify(r))
+}
+
 // Express REST API
 // TODO: implement REST API
 router.route('/competition/:comp_id/:round_name').get(function(req, res) {
@@ -133,6 +163,31 @@ router.route('/competition/:comp_id/:round_name').get(function(req, res) {
       break
     case 'harvard':
       res.send(buildDataForRound(harvard, req.params.round_name))
+      break
+    default:
+      var d = {
+        "response": "no data found"
+      }
+      res.send(d)
+  }
+})
+
+router.route('/competition/:comp_id').get(function(req, res) {
+  switch (req.params.comp_id){
+    case 'worcester':
+      res.send(buildDataForCompetition(worcester))
+      break
+    case 'tufts':
+      res.send(buildDataForCompetition(tufts))
+      break
+    case 'mit':
+      res.send(buildDataForCompetition(mit))
+      break
+    case 'brown':
+      res.send(buildDataForCompetition(brown))
+      break
+    case 'harvard':
+      res.send(buildDataForCompetition(harvard))
       break
     default:
       var d = {
