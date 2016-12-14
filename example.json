@@ -1,0 +1,131 @@
+{
+	"competitionName": "Worcester Classic",
+	"competitionDate": "Jan. 1, 2016",
+	"roundName": "Semi-Final",
+	"skill": "Newcomer",
+	"dances": [
+		{
+		  "danceName": "Am. Waltz",
+		  "competitors":[
+		      {
+		        "name_1": "Jason Lowder",
+		        "name_2": "Mia Bidon",
+		        "coupleNumber": "100",
+		        "advanced": false,
+		        "totalMarks": "2",
+		        "marks": {
+		            "David Endicott": true,
+		            "Helle Rusholt-Yi": false,
+		            "Norm Thibeault": true,
+		            "Michael Ulbrich": false,
+		            "Jessica Nicol": false
+		          }
+		      },
+		      {
+		        "name_1": "Tucker Haydon",
+		        "name_2": "Christine Deidrich",
+		        "coupleNumber": "250",
+		        "advanced": true,
+		        "totalMarks": "3",
+		        "marks": {
+		            "Judge1": true,
+		            "Judge2": false,
+		            "Judge3": true,
+		            "Judge4": true,
+		            "Judge5": false
+		          }
+		      },
+		      {
+		        "name_1": "Alexis Pool",
+		        "name_2": "Shawdy Moor",
+		        "coupleNumber": "1",
+		        "advanced": false,
+		        "totalMarks": "1",
+		        "marks": {
+		            "Judge1": false,
+		            "Judge2": false,
+		            "Judge3": false,
+		            "Judge4": true,
+		            "Judge5": false
+		          }
+		      },
+		      {
+		        "name_1": "Herpy Derpy",
+		        "name_2": "Noopy Snoopy",
+		        "coupleNumber": "15",
+		        "advanced": true,
+		        "totalMarks": "4",
+		        "marks": {
+		            "Judge1": true,
+		            "Judge2": false,
+		            "Judge3": true,
+		            "Judge4": true,
+		            "Judge5": true
+		          }
+		      }
+		    ]
+		},
+		{
+		  "danceName": "Am. Tango",
+		  "judges": ["David Endicott", "Helle Rusholt-Yi", "Norm Thibeault", "Michael Ulbrich", "Jessica Nicol"],
+		  "competitors":[
+		      {
+		        "name_1": "Amanda Lowder",
+		        "name_2": "Tiffiny Tufts",
+		        "coupleNumber": "350",
+		        "advanced": true,
+		        "totalMarks": "4",
+		        "marks": {
+		            "Judge1": true,
+		            "Judge2": true,
+		            "Judge3": true,
+		            "Judge4": true,
+		            "Judge5": false
+		          }
+		      },
+		      {
+		        "name_1": "Chris Baxton",
+		        "name_2": "Herdy Derdy",
+		        "coupleNumber": "5",
+		        "advanced": false,
+		        "totalMarks": "1",
+		        "marks": {
+		            "Judge1": true,
+		            "Judge2": false,
+		            "Judge3": false,
+		            "Judge4": false,
+		            "Judge5": false
+		          }
+		      },
+		      {
+		        "name_1": "Alexis Pool",
+		        "name_2": "Shawdy Moor",
+		        "coupleNumber": "1",
+		        "advanced": false,
+		        "totalMarks": "1",
+		        "marks": {
+		            "Judge1": false,
+		            "Judge2": false,
+		            "Judge3": false,
+		            "Judge4": true,
+		            "Judge5": false
+		          }
+		      },
+		      {
+		        "name_1": "Herpy Derpy",
+		        "name_2": "Noopy Snoopy",
+		        "coupleNumber": "15",
+		        "advanced": true,
+		        "totalMarks": "4",
+		        "marks": {
+		            "Judge1": true,
+		            "Judge2": false,
+		            "Judge3": true,
+		            "Judge4": true,
+		            "Judge5": true
+		          }
+		      }
+		    ]
+		}
+	]
+}

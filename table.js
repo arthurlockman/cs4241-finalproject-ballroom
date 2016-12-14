@@ -94,7 +94,7 @@ function createTableHeader(dance) {
 	}
 
 	html += `<th style="text-align: center;">Total Marks</th>`
-	html += `<th style="text-align: center;">Advanced</th>`
+	html += `<th style="text-align: center;">Advanced to Next Round</th>`
 
 	html += `</tr>`
 	return html
