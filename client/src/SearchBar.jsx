@@ -123,7 +123,7 @@ class SearchBar extends React.Component {
         return (
             <div className={classNames(' search-bar-wrapper center', { 'absoluteCenter': !this.props.didSearch })}>
               {!this.props.didSearch
-                  ? (<h2> <i className="em em-dancer" aria-hidden="true"></i> </h2>)
+                  ? (<img src="../img/Banner_Color.svg" alt="Dancers" className="bannerImg"></img>)
                   : (
                       <div></div>
                   )}

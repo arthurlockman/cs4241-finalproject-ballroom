@@ -10,26 +10,10 @@ class Results extends React.Component {
         this.state = this.initialState = {
             posts: []
         };
-        this.refreshResults = this.refreshResults.bind(this);
-    }
-
-    refreshResults() {
-        console.log("refresh log");
-        axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
-            const posts = res.data.data.children.map(obj => obj.data);
-            this.setState({posts: posts});
-        });
     }
 
     componentDidMount() {
-        this.refreshResults()
-    }
-
-    componentDidUpdate(nextProps) {
-        axios.get(`http://www.reddit.com/r/${this.props.subreddit}.json`).then(res => {
-            const posts = res.data.data.children.map(obj => obj.data);
-            this.setState({posts});
-        });
+        //this.refreshResults()
     }
 
     numberList(props) {
@@ -79,7 +63,7 @@ class Results extends React.Component {
                     <section className="search-results">
                         <div className="one-half column">
                             <div className="display-results">
-                                {this.state.posts.map((post, index) => <div key={index}>
+                                {this.props.posts.map((post, index) => <div key={index}>
                                     <div className='result-list'></div>
                                     <br/>
                                     <span className='result-title'>

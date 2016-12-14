@@ -8,25 +8,25 @@ import DetailView from './DetailView.jsx';
 import axios from 'axios';
 import {Router, Route, Link, browserHistory} from 'react-router'
 
-var matches
-var posts
-
-function getSubreddit(sub) {
-    axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
-        posts = res.data.data.children.map(obj => obj.data);
-        matches = posts.map(function(a) {
-            return a.title;
-        });
-    });
-}
-
-function searchName(name) {
-    for (var i = 0; i < posts.length; i++) {
-        if (posts[i].title.toLowerCase().indexOf(name.toLowerCase()) !== -1) {
-            return posts[i].url
-        }
-    }
-}
+// var matches
+// var posts
+//
+// function getSubreddit(sub) {
+//     axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
+//         posts = res.data.data.children.map(obj => obj.data);
+//         matches = posts.map(function(a) {
+//             return a.title;
+//         });
+//     });
+// }
+//
+// function searchName(name) {
+//     for (var i = 0; i < posts.length; i++) {
+//         if (posts[i].title.toLowerCase().indexOf(name.toLowerCase()) !== -1) {
+//             return posts[i].url
+//         }
+//     }
+// }
 
 class App extends React.Component {
 
@@ -36,10 +36,25 @@ class App extends React.Component {
             didSearch: false,
             detailView: false,
             postDetail: '',
-            searchTerm: ''
+            searchTerm: '',
+            posts: [],
+            matches: []
         };
         this.onSearch = this.onSearch.bind(this);
         this.showDetailView = this.showDetailView.bind(this);
+        this.getSubreddit = this.getSubreddit.bind(this);
+    }
+
+    getSubreddit(sub) {
+        axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
+            const posts = res.data.data.children.map(obj => obj.data);
+            this.setState({posts: posts});
+            var m = posts.map(function(a) {
+                return a.title;
+            });
+            this.setState({matches: m});
+
+        });
     }
 
     onChange(input, resolve) {
@@ -50,10 +65,11 @@ class App extends React.Component {
             // const suggestions = matches[Object.keys(matches).find((partial) => {
             //         return input.match(new RegExp(partial), 'i');
             //     })] || matches;
-            const suggestions = matches;
+            const suggestions = this.state.matches;
             resolve(suggestions.filter((suggestion) => suggestion.match(new RegExp('^' + input.replace(/\W\s/g, ''), 'i'))));
         }, 25);
     }
+    
     onSearch(input) {
         if (!input) 
             return;
@@ -61,7 +77,7 @@ class App extends React.Component {
         //window.location.href = searchName(input)
         this.setState({didSearch: true});
         this.setState({searchTerm: input});
-        getSubreddit(input)
+        this.getSubreddit(input)
         // this.refs.results.refreshResults()
     }
 
@@ -81,7 +97,7 @@ class App extends React.Component {
             return (
                 <div>
                     <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/>
-                    <Results subreddit={this.state.searchTerm} onSelect={this.showDetailView}/>
+                    <Results posts={this.state.posts} subreddit={this.state.searchTerm} onSelect={this.showDetailView}/>
                 </div>
             )
         } else {
