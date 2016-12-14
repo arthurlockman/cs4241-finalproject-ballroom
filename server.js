@@ -240,7 +240,6 @@ function buildDataForCompetition(competition, year) {
 }
 
 function getCompetitorInfo(competitorName) {
-  //TODO: finish this function
   var r = []
   var competition = worcester.concat(tufts, mit, brown, harvard)
   var comps = new Set()
@@ -270,7 +269,7 @@ function getCompetitorInfo(competitorName) {
           else if (compNameExtracted.toLowerCase().indexOf('brown') > -1)
             comp = 'brown'
           var r = {
-            "competition": compNameExtracted,
+            "competition": compNameExtracted.replace(/[0-9]+\s/, ''),
             "year": compYearExtracted,
             "link": '/api/competition/' + compYearExtracted + '/' + comp
           }
