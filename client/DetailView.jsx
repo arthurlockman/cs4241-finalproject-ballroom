@@ -7,19 +7,33 @@ import Banner from './cellblock/modules/Banner.js';
 import Nav from './cellblock/modules/Nav.js';
 import Optimized from './cellblock/modules/Optimized.js';
 import Blocker from './cellblock/modules/Blocker.js';
+import {createHTMLTable} from './js/table.js';
+import ChartsController from './Charts/ChartsController.jsx';
 
 class DetailView extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.initialState = {
-            postDetail: ''
+            postDetail: '',
+            resultsJSON: []
         };
     }
     componentDidMount() {
+        this.getResults();
         if (this.props.postDetail) {
             this.setState({postDetail: this.props.postDetail});
             console.log("this.state.postDetail", this.state.postDetail);
         }
+    }
+
+    getResults() {
+        console.log("getResults!");
+        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/competition/2016/worcester/semi-final/Bronze').then(res => {
+            // console.log(res);
+            // const posts = res.data.dances.map(obj => obj.danceName);
+            // console.log("posts", posts);
+            this.setState({resultsJSON: res.data});
+        });
     }
 
     componentWillUpdate(nextProps) {}
@@ -91,15 +105,16 @@ class DetailView extends React.Component {
                 <Banner className="header">{this.state.postDetail.title}</Banner>
                 <Row>
                     <Column width="1/2">
-                        {this.buildPiChart()}
+                        {/* {this.buildPiChart()} */}
+                        {/* <ChartsController /> */}
                         <p>Testing some Text...</p>
                     </Column>
 
                     <Column width="1/2">
-                        {this.buildBarChart()}
+                        {createHTMLTable(this.state.resultsJSON)}
                     </Column>
                 </Row>
-                <Optimized/>
+                {/* <Optimized/> */}
                 <Banner className="footer">Footer</Banner>
             </Grid>
         );

@@ -103,6 +103,7 @@ class App extends React.Component {
         } else {
             return (
                 <div>
+                  <DetailView postDetail={this.state.postDetail}/>
                     <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/>
                 </div>
             )
@@ -116,10 +117,4 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-    <Router history={browserHistory}>
-    <Route path="/" component={App}>
-        <Route path="search" component={Results}/>
-        <Route path="search/:query" component={Results}/>
-        <Route path="info" component={DetailView}/>
-    </Route>
-</Router>, document.getElementById('root'));
+    <App/>, document.getElementById('root'));
