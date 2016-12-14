@@ -32,6 +32,7 @@ loadDataForCompetition('brown')
 var harvard = []
 // loadDataForCompetition('harvard')
 var searchTable = []
+var autocompleteStrings = []
 
 // Firebase Query Methods
 function loadDataForCompetition(compName) {
@@ -98,6 +99,7 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competitor"
     }
     table.push(d)
+    autocompleteStrings.push(competitors[i])
   }
   for (i = 0; i < years.length; i++) {
     var d = {
@@ -107,6 +109,7 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competition"
     }
     table.push(d)
+    autocompleteStrings.push(name + " " + years[i])
   }
   return table
 }
@@ -332,6 +335,10 @@ router.route('/competitor/:competitor_name').get(function(req, res) {
   var name = req.params.competitor_name
   res.send(name)
   // TODO: finish this method
+})
+
+router.route('/autocomplete').get(function(req, res) {
+  res.send(JSON.stringify(autocompleteStrings))
 })
 
 // Express Web Site
