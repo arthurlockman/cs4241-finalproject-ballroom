@@ -11,7 +11,7 @@ import {Router, Route, Link, browserHistory} from 'react-router'
 // var matches
 // var posts
 //
-// function getSubreddit(sub) {
+// function queryServer(sub) {
 //     axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
 //         posts = res.data.data.children.map(obj => obj.data);
 //         matches = posts.map(function(a) {
@@ -42,34 +42,48 @@ class App extends React.Component {
         };
         this.onSearch = this.onSearch.bind(this);
         this.showDetailView = this.showDetailView.bind(this);
-        this.getSubreddit = this.getSubreddit.bind(this);
+        this.queryServer = this.queryServer.bind(this);
+        this.getAutocomplete = this.getAutocomplete.bind(this);
+        this.onChange = this.onChange.bind(this);
+        this.showSearch = this.showSearch.bind(this);
+    }
+    componentDidMount() {
+        this.getAutocomplete();
     }
 
-    getSubreddit(sub) {
-        axios.get('http://www.reddit.com/r/' + sub + '.json').then(res => {
-            const posts = res.data.data.children.map(obj => obj.data);
-            this.setState({posts: posts});
-            var m = posts.map(function(a) {
-                return a.title;
-            });
-            this.setState({matches: m});
+    queryServer(query) {
+        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/search/' + query).then(res => {
+            // const posts = res.data.map(obj => obj.data);
+            this.setState({posts: res.data});
+        });
+    }
 
+    getAutocomplete() {
+        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/autocomplete').then(res => {
+            // var m = posts.map(function(a) {
+            //     return a.title;
+            // });
+            //console.log('getAutocomplete', res.data);
+            this.setState({matches: res.data});
         });
     }
 
     onChange(input, resolve) {
-        //getSubreddit()
-        // Simulate AJAX request
-        //console.log("matches", matches);
         setTimeout(() => {
+            console.log('timeout');
+            const suggestions = this.state.matches;
             // const suggestions = matches[Object.keys(matches).find((partial) => {
             //         return input.match(new RegExp(partial), 'i');
-            //     })] || matches;
-            const suggestions = this.state.matches;
-            resolve(suggestions.filter((suggestion) => suggestion.match(new RegExp('^' + input.replace(/\W\s/g, ''), 'i'))));
+            //     })] || matches
+            try {
+                resolve(suggestions.filter((suggestion) => suggestion.match(new RegExp('^' + input.replace(/\W\s/g, ''), 'i'))));
+            } catch (err) {
+                console.log(err);
+            }
         }, 25);
+
     }
-    
+
     onSearch(input) {
         if (!input) 
             return;
@@ -77,7 +91,7 @@ class App extends React.Component {
         //window.location.href = searchName(input)
         this.setState({didSearch: true});
         this.setState({searchTerm: input});
-        this.getSubreddit(input)
+        this.queryServer(input)
         // this.refs.results.refreshResults()
     }
 
@@ -85,12 +99,18 @@ class App extends React.Component {
         this.setState({postDetail: post});
         this.setState({detailView: true});
     }
+    
+    showSearch() {
+      this.setState({postDetail: null});
+      this.setState({detailView: false});
+      this.setState({didSearch: false});
+    }
 
     switchView() {
         if (this.state.detailView) {
             return (
                 <div>
-                    <DetailView postDetail={this.state.postDetail}/>
+                    <DetailView postDetail={this.state.postDetail} handleClickBack={this.showSearch}/>
                 </div>
             )
         } else if (this.state.didSearch) {
@@ -103,7 +123,7 @@ class App extends React.Component {
         } else {
             return (
                 <div>
-                  <DetailView postDetail={this.state.postDetail}/>
+                    {/* <DetailView postDetail={this.state.postDetail} handleClickBack={this.showSearch}/> */}
                     <SearchBar placeholder="search..." onChange={this.onChange} onSearch={this.onSearch} didSearch={this.state.didSearch}/>
                 </div>
             )

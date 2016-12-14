@@ -4,6 +4,8 @@ import axios from 'axios';
 import {Link} from 'react-router'
 import {browserHistory} from 'react-router'
 
+const baseURL = "http://cs4241-fp-arthurlockman.herokuapp.com"
+
 class Results extends React.Component {
     constructor(props) {
         super(props);
@@ -24,23 +26,23 @@ class Results extends React.Component {
         );
     }
 
-    restultList(posts) {
-        if (posts.length) {
-            posts.map(function(n) {
-                //console.log("POSTS", n);
-                return (
-                    <div>
-                        <div class='result-list result-" + i + "'></div>
-                        <span class='result-title title-" + i + "'>
-                            <a href='https://en.wikipedia.org/wiki/" + url + "' target='_blank'>{n.title}</a>
-                        </span>
-                        <span class='result-snippet snippet-" + i + "'></span>
-                        <span class='result-metadata metadata-" + i + "'></span>
-                    </div>
-                )
-            })
-        }
-    }
+    // restultList(posts) {
+    //     if (posts.length) {
+    //         posts.map(function(n) {
+    //             //console.log("POSTS", n);
+    //             return (
+    //                 <div>
+    //                     <div class='result-list result-" + i + "'></div>
+    //                     <span class='result-title title-" + i + "'>
+    //                         <a href='https://en.wikipedia.org/wiki/" + url + "' target='_blank'>{n.title}</a>
+    //                     </span>
+    //                     <span class='result-snippet snippet-" + i + "'></span>
+    //                     <span class='result-metadata metadata-" + i + "'></span>
+    //                 </div>
+    //             )
+    //         })
+    //     }
+    // }
 
     onSelect(post, e) {
         e.preventDefault();
@@ -57,7 +59,7 @@ class Results extends React.Component {
         var onClick = this.onSelect;
         return (
             <div>
-                <h1 className="title">{`/r/${this.props.subreddit}`}</h1>
+                <h1 className="title">{`${this.props.subreddit}`}</h1>
 
                 <div className="container">
                     <section className="search-results">
@@ -68,13 +70,13 @@ class Results extends React.Component {
                                     <br/>
                                     <span className='result-title'>
                                         {/* <Link to={`/search`} >{post.title}</Link> */}
-                                        <a onClick={onClick = this.onSelect.bind(this, post)} href={post.url} target='_blank'>{post.title}
+                                        <a onClick={onClick = this.onSelect.bind(this, post)} href={baseURL+post.link} target='_blank'>{post.name}
                                         </a>
                                     </span>
                                     <br/>
-                                    <span className='result-snippet'>{post.selftext}</span>
+                                    <span className='result-snippet'>{post.body}</span>
                                     <br/>
-                                    <span className='result-metadata'>{"Ups: " + post.ups + " Downs: " + post.downs}</span>
+                                    <span className='result-metadata'>{"Type: " + post.type}</span>
                                     <br/>
                                 </div>)}
                             </div>

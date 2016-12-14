@@ -20,6 +20,7 @@ class DetailView extends React.Component {
     }
     componentDidMount() {
         this.getResults();
+        console.log(this.props.postDetail);
         if (this.props.postDetail) {
             this.setState({postDetail: this.props.postDetail});
             console.log("this.state.postDetail", this.state.postDetail);
@@ -27,7 +28,6 @@ class DetailView extends React.Component {
     }
 
     getResults() {
-        console.log("getResults!");
         axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/competition/2016/worcester/semi-final/Bronze').then(res => {
             // console.log(res);
             // const posts = res.data.dances.map(obj => obj.danceName);
@@ -99,24 +99,30 @@ class DetailView extends React.Component {
         } />)
     }
 
+    createMarkup() {
+        return {
+            __html: createHTMLTable(this.state.resultsJSON)
+        };
+    }
+
     render() {
         return (
             <Grid>
-                <Banner className="header">{this.state.postDetail.title}</Banner>
+                <Banner className="header">{this.state.postDetail.name}
+                    <br/>
+                    <button className="btn btn-default fa fa-search" onClick={this.props.handleClickBack}></button>
+                </Banner>
                 <Row>
-                    <Column width="1/2">
-                        {/* {this.buildPiChart()} */}
-                        {/* <ChartsController /> */}
-                        <p>Testing some Text...</p>
+                    <Column width="1">
+                        <div dangerouslySetInnerHTML={this.createMarkup()}/>;
                     </Column>
-
-                    <Column width="1/2">
-                        {createHTMLTable(this.state.resultsJSON)}
+                    <Column width="1">
+                        <ChartsController/> {/* <p>Testing some Text...</p> */}
                     </Column>
                 </Row>
-                {/* <Optimized/> */}
-                <Banner className="footer">Footer</Banner>
+                <Banner className="footer">{this.state.postDetail.type}</Banner>
             </Grid>
+
         );
     }
 }
