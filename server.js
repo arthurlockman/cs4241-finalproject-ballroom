@@ -58,7 +58,7 @@ function loadDataForCompetition(compName) {
 }
 
 // Dataset building Methods
-function buildDataForRound(competition, roundName) {
+function buildDataForRound(competition, roundName, year) {
   var rounds = []
   var dances = []
   var rne = ""
@@ -66,7 +66,8 @@ function buildDataForRound(competition, roundName) {
   for (i = 0; i < competition.length; i++) {
     var round = competition[i]
     var roundNameExtracted = round.roundInfo[0].roundName
-    if (roundName.toLowerCase() == roundNameExtracted.toLowerCase())
+    var roundYear = round.competitionInfo.year
+    if (roundName.toLowerCase() == roundNameExtracted.toLowerCase() && roundYear == year)
     {
       rounds.push(round)
       rne = roundNameExtracted
@@ -114,12 +115,21 @@ function buildDataForRound(competition, roundName) {
   return(JSON.stringify(returnData))
 }
 
-function buildDataForCompetition(competition) {
+function buildDataForCompetition(competition, year) {
   var rounds = new Set()
   var competitors = new Set()
   var judges = new Set()
+  var r = []
   for (i = 0; i < competition.length; i++) {
     var round = competition[i]
+    var roundYear = round.competitionInfo.year
+    if (roundYear == year)
+    {
+      r.push(round)
+    }
+  }
+  for (i = 0; i < r.length; i++) {
+    var round = r[i]
     var roundNameExtracted = round.roundInfo[0].roundName
     rounds.add(roundNameExtracted)
     for (j = 0; j < round.roundInfo.length; j++) {
@@ -147,22 +157,22 @@ function buildDataForCompetition(competition) {
 
 // Express REST API
 // TODO: implement REST API
-router.route('/competition/:comp_id/:round_name').get(function(req, res) {
+router.route('/competition/:year/:comp_id/:round_name').get(function(req, res) {
   switch (req.params.comp_id){
     case 'worcester':
-      res.send(buildDataForRound(worcester, req.params.round_name))
+      res.send(buildDataForRound(worcester, req.params.round_name, req.params.year))
       break
     case 'tufts':
-      res.send(buildDataForRound(tufts, req.params.round_name))
+      res.send(buildDataForRound(tufts, req.params.round_name, req.params.year))
       break
     case 'mit':
-      res.send(buildDataForRound(mit, req.params.round_name))
+      res.send(buildDataForRound(mit, req.params.round_name, req.params.year))
       break
     case 'brown':
-      res.send(buildDataForRound(brown, req.params.round_name))
+      res.send(buildDataForRound(brown, req.params.round_name, req.params.year))
       break
     case 'harvard':
-      res.send(buildDataForRound(harvard, req.params.round_name))
+      res.send(buildDataForRound(harvard, req.params.round_name, req.params.year))
       break
     default:
       var d = {
@@ -172,22 +182,22 @@ router.route('/competition/:comp_id/:round_name').get(function(req, res) {
   }
 })
 
-router.route('/competition/:comp_id').get(function(req, res) {
+router.route('/competition/:year/:comp_id').get(function(req, res) {
   switch (req.params.comp_id){
     case 'worcester':
-      res.send(buildDataForCompetition(worcester))
+      res.send(buildDataForCompetition(worcester, req.params.year))
       break
     case 'tufts':
-      res.send(buildDataForCompetition(tufts))
+      res.send(buildDataForCompetition(tufts, req.params.year))
       break
     case 'mit':
-      res.send(buildDataForCompetition(mit))
+      res.send(buildDataForCompetition(mit, req.params.year))
       break
     case 'brown':
-      res.send(buildDataForCompetition(brown))
+      res.send(buildDataForCompetition(brown, req.params.year))
       break
     case 'harvard':
-      res.send(buildDataForCompetition(harvard))
+      res.send(buildDataForCompetition(harvard, req.params.year))
       break
     default:
       var d = {
