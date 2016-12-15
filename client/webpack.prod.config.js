@@ -1,10 +1,10 @@
 var Webpack = require('webpack');
-var path = require('path');
-var nodeModulesPath = path.resolve(__dirname, 'node_modules');
+var nodeExternals = require('webpack-node-externals');
 
 var config = {
     entry: './client/App.jsx',
-
+    target: 'node',
+    externals: [nodeExternals()],
     output: {
         path: './client/',
         filename: 'bundle.js'
@@ -15,7 +15,6 @@ var config = {
             {
                 test: /\.(js|jsx?)$/,
                 loader: 'babel',
-                exclude: [nodeModulesPath],
 
                 query: {
                     presets: ['es2015', 'react']
