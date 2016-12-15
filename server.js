@@ -99,7 +99,8 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competitor"
     }
     table.push(d)
-    autocompleteStrings.push(competitors[i])
+    if (competitors[i] != null)
+      autocompleteStrings.push(competitors[i])
   }
   for (i = 0; i < years.length; i++) {
     var d = {
@@ -109,7 +110,8 @@ function buildSearchTable(competition, compName) {
       "body": "Ballroom dance competition"
     }
     table.push(d)
-    autocompleteStrings.push(name + " " + years[i])
+    if (name != null && years[i] != null)
+      autocompleteStrings.push(name + " " + years[i])
   }
   return table
 }
@@ -216,8 +218,10 @@ function buildDataForCompetition(competition, year) {
     rounds.add(roundNameExtracted.replace('/', '.'))
     for (j = 0; j < round.roundInfo.length; j++) {
       var element = round.roundInfo[j]
-      competitors.add(element.name_1)
-      competitors.add(element.name_2)
+      if (element.name_1 != null)
+        competitors.add(element.name_1)
+      if (element.name_2 != null)
+        competitors.add(element.name_2)
       var jmd = element.dances[0].judgeMarkData
       for (judge in jmd) {
         judges.add(judge)
@@ -235,6 +239,54 @@ function buildDataForCompetition(competition, year) {
     "judges": judges
   }
   return(JSON.stringify(r))
+}
+
+function getCompetitorInfo(competitorName) {
+  var r = []
+  var competition = worcester.concat(tufts, mit, brown, harvard)
+  var comps = new Set()
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    r.push(round)
+  }
+  for (i = 0; i < r.length; i++) {
+    var round = r[i]
+    var compNameExtracted = round.competitionInfo.name
+    var compYearExtracted = round.competitionInfo.year
+    for (j = 0; j < round.roundInfo.length; j++) {
+      var element = round.roundInfo[j]
+      try {
+        if (element.name_1.toLowerCase() == competitorName.toLowerCase() || 
+            element.name_2.toLowerCase() == competitorName.toLowerCase())
+        {
+          var comp = ''
+          if (compNameExtracted.toLowerCase().indexOf('worcester') > -1)
+            comp = 'worcester'
+          else if (compNameExtracted.toLowerCase().indexOf('tufts') > -1)
+            comp = 'tufts'
+          else if (compNameExtracted.toLowerCase().indexOf('mit') > -1)
+            comp = 'mit'
+          else if (compNameExtracted.toLowerCase().indexOf('harvard') > -1)
+            comp = 'harvard'
+          else if (compNameExtracted.toLowerCase().indexOf('brown') > -1)
+            comp = 'brown'
+          var r = {
+            "competition": compNameExtracted.replace(/[0-9]+\s/, ''),
+            "year": compYearExtracted,
+            "link": '/api/competition/' + compYearExtracted + '/' + comp
+          }
+          comps.add(r)
+        }
+      } catch (TypeError) {
+
+      }
+    }
+  }
+  var v = {
+    "name": competitorName,
+    "competitions": Array.from(comps)
+  }
+  return JSON.stringify(v)
 }
 
 // Express REST API
@@ -333,8 +385,7 @@ router.route('/search/:query').get(function(req, res) {
 
 router.route('/competitor/:competitor_name').get(function(req, res) {
   var name = req.params.competitor_name
-  res.send(name)
-  // TODO: finish this method
+  res.send(getCompetitorInfo(name))
 })
 
 router.route('/autocomplete').get(function(req, res) {
