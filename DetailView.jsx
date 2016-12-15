@@ -23,13 +23,17 @@ class DetailView extends React.Component {
             skillSelect: '',
             roundSelect: '',
             currentURL: '',
-            resultsJSONTable: []
+            resultsJSONTable: [],
+            logSkillSet: false,
+            logRoundSet:false
         };
         this.onSelectCompetitions = this.onSelectCompetitions.bind(this);
         this.competitionsList = this.competitionsList.bind(this);
         this.renderCompetition = this.renderCompetition.bind(this);
         this.handleClickEnter = this.handleClickEnter.bind(this);
+        this.addTable = this.addTable.bind(this);
     }
+
     componentDidMount() {
         if (this.props.postDetail) {
             this.setState({postDetail: this.props.postDetail});
@@ -90,6 +94,18 @@ class DetailView extends React.Component {
         });
     }
 
+    addTable() {
+        if (this.state.logSkillSet && this.state.logRoundSet ) {
+            return (
+                <Row>
+                    <Column width="1">
+                        <div dangerouslySetInnerHTML={this.createMarkup()}/>
+                    </Column>
+                </Row>
+            );
+        }
+    }
+
     renderCompetition() {
 
         var that = this;
@@ -105,10 +121,12 @@ class DetailView extends React.Component {
         function logChangeSkill(val) {
             console.log("Selected: " + val.value);
             that.setState({skillSelect: val.value});
+            that.setState({logSkillSet: true});
         }
         function logChangeRound(val) {
             console.log("Selected: " + val.value);
             that.setState({roundSelect: val.value});
+            that.setState({logRoundSet: true});
         }
 
         return (
@@ -131,9 +149,11 @@ class DetailView extends React.Component {
                 </Row>
                 <Row>
                     <Column width="1">
-                        <div dangerouslySetInnerHTML={this.createMarkup()}/>;
+                        <div dangerouslySetInnerHTML={this.createMarkup()}/>
                     </Column>
                 </Row>
+                <ChartsController />
+                {/* {this.addTable} */}
                 <Row>
                     <Column width="1/2">
                         <h2>Competitors</h2>
