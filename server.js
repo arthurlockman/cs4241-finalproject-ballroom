@@ -400,9 +400,12 @@ app.get('/', function(req, res) {
   })
 })
 
-app.get('/bundle.js', function(req, res) {
-    fs.readFile('client/bundle.js', function(error, content) {
-    res.writeHead(200, {'Content-type': 'text/javascript'})
+app.get('/*', function(req, res) {
+  fs.readFile('client/' + req.params[0], function(error, content) {
+    var encodingExtension = req.params[0].split('.')[1]
+    if (encodingExtension == 'js')
+      encodingExtension = 'javascript'
+    res.writeHead(200, {'Content-type': 'text/' + encodingExtension})
     res.end(content, 'utf-8')
   })
 })
