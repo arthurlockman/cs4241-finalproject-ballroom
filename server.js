@@ -402,7 +402,7 @@ app.get('/', function(req, res) {
 
 app.get('/*', function(req, res) {
   fs.readFile('client/' + req.params[0], function(error, content) {
-    var encodingExtension = req.params[0].split('.')[1]
+    var encodingExtension = req.params[0].split('.')[req.params[0].split('.').length - 1]
     if (encodingExtension == 'js')
       encodingExtension = 'javascript'
     res.writeHead(200, {'Content-type': 'text/' + encodingExtension})
