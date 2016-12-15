@@ -430,14 +430,14 @@ app.get('/img/*', function(req, res) {
 })
 
 app.get('/readme.md', function(req, res) {
-  fs.readFile('readme.md', function(error, content) {
+  fs.readFile('README.md', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
     res.end(content, 'utf-8')
   })
 })
 
 app.get('/README.md', function(req, res) {
-  fs.readFile('readme.md', function(error, content) {
+  fs.readFile('README.md', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
     res.end(content, 'utf-8')
   })
