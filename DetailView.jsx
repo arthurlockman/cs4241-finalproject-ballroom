@@ -25,13 +25,14 @@ class DetailView extends React.Component {
             currentURL: '',
             resultsJSONTable: [],
             logSkillSet: false,
-            logRoundSet:false
+            logRoundSet: false
         };
         this.onSelectCompetitions = this.onSelectCompetitions.bind(this);
         this.competitionsList = this.competitionsList.bind(this);
         this.renderCompetition = this.renderCompetition.bind(this);
         this.handleClickEnter = this.handleClickEnter.bind(this);
         this.addTable = this.addTable.bind(this);
+        this.makeGraphs = this.makeGraphs.bind(this);
     }
 
     componentDidMount() {
@@ -85,7 +86,7 @@ class DetailView extends React.Component {
 
     handleClickEnter() {
         axios.get('https://cs4241-fp-arthurlockman.herokuapp.com' + this.state.currentURL + '/' + this.state.roundSelect + '/' + this.state.skillSelect).then(res => {
-            console.log('handleClickEnter', res.data);
+            //console.log('handleClickEnter', res.data);
             // const posts = res.data.dances.map(obj => obj.danceName);
             // this.setState({resultsJSON: res.data});
             // this.setState({isCompetition: true});
@@ -95,7 +96,7 @@ class DetailView extends React.Component {
     }
 
     addTable() {
-        if (this.state.logSkillSet && this.state.logRoundSet ) {
+        if (this.state.logSkillSet && this.state.logRoundSet) {
             return (
                 <Row>
                     <Column width="1">
@@ -104,6 +105,17 @@ class DetailView extends React.Component {
                 </Row>
             );
         }
+    }
+
+    makeGraphs() {
+      try{
+        const listItems = this.state.resultsJSONTable.dances.map((number) => <div><ChartsController data={number}/></div>);
+        console.log("listItems", listItems);
+
+        return (
+            <div>{listItems}</div>
+        )
+      } catch (err) {}
     }
 
     renderCompetition() {
@@ -152,7 +164,10 @@ class DetailView extends React.Component {
                         <div dangerouslySetInnerHTML={this.createMarkup()}/>
                     </Column>
                 </Row>
-                <ChartsController />
+                <Row>
+                    {this.makeGraphs()}
+                </Row>
+                {/* <ChartsController danceName = {this.state.resultsJSON.}/> */}
                 {/* {this.addTable} */}
                 <Row>
                     <Column width="1/2">
