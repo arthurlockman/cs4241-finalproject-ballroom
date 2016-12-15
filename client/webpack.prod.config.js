@@ -1,8 +1,8 @@
 var config = {
-    entry: './App.jsx',
+    entry: './client/App.jsx',
 
     output: {
-        path: './',
+        path: './client/',
         filename: 'bundle.js'
     },
 
