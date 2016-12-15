@@ -24,14 +24,15 @@ var worcesterRef = db.ref("/worcester")
 var worcester = []
 loadDataForCompetition('worcester')
 var tufts = []
-// loadDataForCompetition('tufts')
+loadDataForCompetition('tufts')
 var mit = []
-// loadDataForCompetition('mit')
+loadDataForCompetition('mit')
 var brown = []
-// loadDataForCompetition('brown')
+loadDataForCompetition('brown')
 var harvard = []
 // loadDataForCompetition('harvard')
-var searchTable = buildSearchTable(worcester, tufts, mit, brown, harvard)
+var searchTable = []
+var autocompleteStrings = []
 
 // Firebase Query Methods
 function loadDataForCompetition(compName) {
@@ -40,18 +41,28 @@ function loadDataForCompetition(compName) {
     switch (compName){
       case 'worcester':
         worcester = v.val()
+        console.log('Indexing ' + compName)
+        searchTable = searchTable.concat(buildSearchTable(worcester, compName))
         break
       case 'tufts':
         tufts = v.val()
+        console.log('Indexing ' + compName)
+        searchTable = searchTable.concat(buildSearchTable(tufts, compName))
         break
       case 'mit':
         mit = v.val()
+        console.log('Indexing ' + compName)
+        searchTable = searchTable.concat(buildSearchTable(mit, compName))
         break
       case 'brown':
         brown = v.val()
+        console.log('Indexing ' + compName)
+        searchTable = searchTable.concat(buildSearchTable(brown, compName))
         break
       case 'harvard':
         harvard = v.val()
+        console.log('Indexing ' + compName)
+        searchTable = searchTable.concat(buildSearchTable(harvard, compName))
         break
     }
     console.log('Done loading ' + compName)
@@ -59,16 +70,48 @@ function loadDataForCompetition(compName) {
 }
 
 // Dataset building Methods
-function buildSearchTable() {
+function buildSearchTable(competition, compName) {
   var table = []
-  for (i = 0; i < arguments.length; i++) {
-    var comp = arguments[i]
+  var years = new Set()
+  var name = competition[0].competitionInfo.name.replace(/[0-9]+\s/, '')
+  var r = []
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    years.add(round.competitionInfo.year)
+    r.push(round)
+  }
+  var competitors = new Set()
+  for (i = 0; i < r.length; i++) {
+    var round = r[i]
+    for (j = 0; j < round.roundInfo.length; j++) {
+      var element = round.roundInfo[j]
+      competitors.add(element.name_1)
+      competitors.add(element.name_2)
+    }
+  }
+  competitors = Array.from(competitors)
+  years = Array.from(years)
+  for (i = 0; i < competitors.length; i++) {
     var d = {
-      "name": "temp" + i,
-      "link": "/api/temp",
-      "type": "temp"
+      "name": competitors[i],
+      "link": "/api/competitor/" + encodeURIComponent(competitors[i]),
+      "type": "competitor",
+      "body": "Ballroom dance competitor"
     }
     table.push(d)
+    if (competitors[i] != null)
+      autocompleteStrings.push(competitors[i])
+  }
+  for (i = 0; i < years.length; i++) {
+    var d = {
+      "name": name + " " + years[i],
+      "link": "/api/competition/" + years[i] + "/" + compName,
+      "type": "competition",
+      "body": "Ballroom dance competition"
+    }
+    table.push(d)
+    if (name != null && years[i] != null)
+      autocompleteStrings.push(name + " " + years[i])
   }
   return table
 }
@@ -83,7 +126,8 @@ function buildDataForRound(competition, roundName, year, skill) {
     var roundNameExtracted = round.roundInfo[0].roundName
     var roundYear = round.competitionInfo.year
     var roundSkill = round.eventInfo.skill
-    if (roundName.toLowerCase().replace('.', '/') == roundNameExtracted.toLowerCase() && roundYear == year
+    if (roundName.toLowerCase().replace('.', '/') == roundNameExtracted.toLowerCase() 
+        && roundYear == year
         && roundSkill.toLowerCase() == skill.toLowerCase())
     {
       rounds.push(round)
@@ -123,7 +167,7 @@ function buildDataForRound(competition, roundName, year, skill) {
   }
 
   var returnData = {
-    "competitionName": competition[0].competitionInfo.name,
+    "competitionName": competition[0].competitionInfo.name.replace(/[0-9]+\s/, ''),
     "competitionDate": competition[0].competitionInfo.date,
     "roundName": rne,
     "skill": rounds[0].eventInfo.skill,
@@ -174,8 +218,10 @@ function buildDataForCompetition(competition, year) {
     rounds.add(roundNameExtracted.replace('/', '.'))
     for (j = 0; j < round.roundInfo.length; j++) {
       var element = round.roundInfo[j]
-      competitors.add(element.name_1)
-      competitors.add(element.name_2)
+      if (element.name_1 != null)
+        competitors.add(element.name_1)
+      if (element.name_2 != null)
+        competitors.add(element.name_2)
       var jmd = element.dances[0].judgeMarkData
       for (judge in jmd) {
         judges.add(judge)
@@ -185,14 +231,69 @@ function buildDataForCompetition(competition, year) {
   rounds = Array.from(rounds)
   competitors = Array.from(competitors)
   judges = Array.from(judges)
+  var skills = []
+  for (k = 0; k < rounds.length; k++)
+  {
+    skills = skills.concat(JSON.parse(buildDataForRoundTop(competition, rounds[k], year))["skills"])
+  }
+  skills = new Set(skills)
   var r = {
-    "competitionName": competition[0].competitionInfo.name,
+    "competitionName": competition[0].competitionInfo.name.replace(/[0-9]+\s/, ''),
     "competitionDate": competition[0].competitionInfo.date,
     "rounds": rounds,
     "competitors": competitors,
-    "judges": judges
+    "judges": judges,
+    "skills": Array.from(skills)
   }
   return(JSON.stringify(r))
+}
+
+function getCompetitorInfo(competitorName) {
+  var r = []
+  var competition = worcester.concat(tufts, mit, brown, harvard)
+  var comps = new Set()
+  for (i = 0; i < competition.length; i++) {
+    var round = competition[i]
+    r.push(round)
+  }
+  for (i = 0; i < r.length; i++) {
+    var round = r[i]
+    var compNameExtracted = round.competitionInfo.name
+    var compYearExtracted = round.competitionInfo.year
+    for (j = 0; j < round.roundInfo.length; j++) {
+      var element = round.roundInfo[j]
+      try {
+        if (element.name_1.toLowerCase() == competitorName.toLowerCase() || 
+            element.name_2.toLowerCase() == competitorName.toLowerCase())
+        {
+          var comp = ''
+          if (compNameExtracted.toLowerCase().indexOf('worcester') > -1)
+            comp = 'worcester'
+          else if (compNameExtracted.toLowerCase().indexOf('tufts') > -1)
+            comp = 'tufts'
+          else if (compNameExtracted.toLowerCase().indexOf('mit') > -1)
+            comp = 'mit'
+          else if (compNameExtracted.toLowerCase().indexOf('harvard') > -1)
+            comp = 'harvard'
+          else if (compNameExtracted.toLowerCase().indexOf('brown') > -1)
+            comp = 'brown'
+          var r = {
+            "competition": compNameExtracted.replace(/[0-9]+\s/, ''),
+            "year": compYearExtracted,
+            "link": '/api/competition/' + compYearExtracted + '/' + comp
+          }
+          comps.add(r)
+        }
+      } catch (TypeError) {
+
+      }
+    }
+  }
+  var v = {
+    "name": competitorName,
+    "competitions": Array.from(comps)
+  }
+  return JSON.stringify(v)
 }
 
 // Express REST API
@@ -275,22 +376,55 @@ router.route('/competition/:year/:comp_id').get(function(req, res) {
 router.route('/search/:query').get(function(req, res) {
   var query = req.params.query
   var r = []
-  console.log(query)
-  console.log(JSON.stringify(searchTable))
   for (i = 0; i < searchTable.length; i++) {
     val = searchTable[i]
-    if (val.name.indexOf(query) > -1)
-    {
-      r.push(val)
+    try {
+      if (val.name.toLowerCase().indexOf(query.toLowerCase()) > -1)
+      {
+        r.push(val)
+      }
+    } catch (TypeError) {
+
     }
   }
   res.send(JSON.stringify(r))
 })
 
+router.route('/competitor/:competitor_name').get(function(req, res) {
+  var name = req.params.competitor_name
+  res.send(getCompetitorInfo(name))
+})
+
+router.route('/autocomplete').get(function(req, res) {
+  res.send(JSON.stringify(autocompleteStrings))
+})
+
 // Express Web Site
+
 app.get('/', function(req, res) {
   fs.readFile('index.html', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/css/*', function(req, res) {
+  fs.readFile('css/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/css'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/bundle.js', function(req, res) {
+  fs.readFile('bundle.js', function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/javascript'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/img/*', function(req, res) {
+  fs.readFile('img/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'image/svg+xml'})
     res.end(content, 'utf-8')
   })
 })
