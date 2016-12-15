@@ -231,12 +231,19 @@ function buildDataForCompetition(competition, year) {
   rounds = Array.from(rounds)
   competitors = Array.from(competitors)
   judges = Array.from(judges)
+  var skills = []
+  for (k = 0; k < rounds.length; k++)
+  {
+    skills = skills.concat(JSON.parse(buildDataForRoundTop(competition, rounds[k], year))["skills"])
+  }
+  skills = new Set(skills)
   var r = {
     "competitionName": competition[0].competitionInfo.name.replace(/[0-9]+\s/, ''),
     "competitionDate": competition[0].competitionInfo.date,
     "rounds": rounds,
     "competitors": competitors,
-    "judges": judges
+    "judges": judges,
+    "skills": Array.from(skills)
   }
   return(JSON.stringify(r))
 }

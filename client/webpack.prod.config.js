@@ -14,8 +14,8 @@ var config = {
         loaders: [
             {
                 test: /\.(js|jsx?)$/,
-                exclude: '*/node_modules/*',
                 loader: 'babel',
+                exclude: [nodeModulesPath],
 
                 query: {
                     presets: ['es2015', 'react']
