@@ -218,8 +218,10 @@ function buildDataForCompetition(competition, year) {
     rounds.add(roundNameExtracted.replace('/', '.'))
     for (j = 0; j < round.roundInfo.length; j++) {
       var element = round.roundInfo[j]
-      competitors.add(element.name_1)
-      competitors.add(element.name_2)
+      if (element.name_1 != null)
+        competitors.add(element.name_1)
+      if (element.name_2 != null)
+        competitors.add(element.name_2)
       var jmd = element.dances[0].judgeMarkData
       for (judge in jmd) {
         judges.add(judge)
