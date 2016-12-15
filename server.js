@@ -443,6 +443,13 @@ app.get('/README.md', function(req, res) {
   })
 })
 
+app.get('/README.pdf', function(req, res) {
+  fs.readFile('README.pdf', function(error, content) {
+    res.writeHead(200, {'Content-type': 'application/pdf'})
+    res.end(content, 'utf-8')
+  })
+})
+
 // Express setup
 var server = app.listen(process.env.PORT || port, function () {
   var host = server.address().address
