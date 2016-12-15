@@ -1,0 +1,47 @@
+{
+  "name": "react-search-bar",
+  "version": "1.1.4",
+  "description": "search bar with autosuggest",
+  "keywords": [
+    "search",
+    "autosuggest",
+    "autocomplete",
+    "react",
+    "react-component"
+  ],
+  "license": "MIT",
+  "files": [
+    "lib",
+    "main.js"
+  ],
+  "main": "main.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "build-demo": "webpack -p",
+    "demo": "webpack-dev-server --config webpack.config.dev.js",
+    "start": "webpack-dev-server --hot",
+    "lint": "eslint src/**"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.4.1"
+  },
+  "dependencies": {
+    "axios": "^0.15.3",
+    "classnames": "^2.2.5",
+    "es6-promise": "^4.0.5",
+    "json-loader": "^0.5.4",
+    "react": "^15.4.1",
+    "react-cellblock": "^2.0.0",
+    "react-columns": "^0.2.2",
+    "react-dom": "^15.4.1",
+    "react-history": "^0.16.1",
+    "react-raw-html": "^0.4.0",
+    "react-router": "^3.0.0",
+    "react-router-form": "^1.0.2",
+    "react-select": "^1.0.0-rc.2",
+    "react-select2-wrapper": "^1.0.4-beta2",
+    "victory": "^0.14.0",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
