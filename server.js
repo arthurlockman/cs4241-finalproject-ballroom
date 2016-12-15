@@ -400,7 +400,7 @@ app.get('/', function(req, res) {
   })
 })
 
-app.get('bundle.js', function(req, res) {
+app.get('/bundle.js', function(req, res) {
     fs.readFile('client/bundle.js', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/javascript'})
     res.end(content, 'utf-8')
