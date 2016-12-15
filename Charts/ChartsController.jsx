@@ -21,7 +21,7 @@ class ChartsController extends React.Component {
         super(props);
         // console.log(props.data)
 
-        var numJudges = Object.keys(props.data.competitors[0].marks).length
+        var numJudges = Object.keys(props.data.competitors[0].marks).length+1
         var lbl = []
         for(var i = 0; i < numJudges; i++) {
             lbl.push(i+" marks")
