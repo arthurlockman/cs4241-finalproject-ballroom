@@ -45,7 +45,7 @@ function createTable(dance, numDances) {
 
     var html = `
 
-	<div class="col-md-6">
+	<div class="col-md-12">
 		<h2 class="sub-header">${danceName}</h2>
 		<div class="table-responsive">
 			<table class="table table-hover table-striped">
@@ -126,7 +126,7 @@ function createRow(coupleInfo, index) {
 	      <th scope="row">${name_1} & ${name_2} </th>
 	`
     var markKeys = Object.keys(marks)
-    for (var i = 0; i < marks.length; i++) {
+    for (var i = 0; i < markKeys.length; i++) {
         html += `<td style="text-align: center;">${marks[markKeys[i]]
             ? 'X'
             : ''}</td>`
