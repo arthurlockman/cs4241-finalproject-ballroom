@@ -76,7 +76,7 @@ class Results extends React.Component {
                                     <br/>
                                     <span className='result-snippet'>{post.body}</span>
                                     <br/>
-                                    <span className='result-metadata'>{"Type: " + post.type}</span>
+                                    <span className='result-metadata'>{post.type}</span>
                                     <br/>
                                 </div>)}
                             </div>

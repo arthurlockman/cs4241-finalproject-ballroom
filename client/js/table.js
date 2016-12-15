@@ -45,7 +45,7 @@ function createTable(dance, numDances) {
 
     var html = `
 
-	<div class="col-md-${rowSpan}">
+	<div class="col-md-6">
 		<h2 class="sub-header">${danceName}</h2>
 		<div class="table-responsive">
 			<table class="table table-hover table-striped">
