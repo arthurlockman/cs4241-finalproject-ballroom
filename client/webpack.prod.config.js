@@ -1,3 +1,7 @@
+var Webpack = require('webpack');
+var path = require('path');
+var nodeModulesPath = path.resolve(__dirname, 'node_modules');
+
 var config = {
     entry: './client/App.jsx',
 
@@ -10,7 +14,7 @@ var config = {
         loaders: [
             {
                 test: /\.(js|jsx?)$/,
-                exclude: /node_modules/,
+                exclude: [nodeModulesPath],
                 loader: 'babel',
 
                 query: {
