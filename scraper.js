@@ -18,11 +18,11 @@ NO_SELECTOR = -9999;
 PRINT_RESULTS = true
 PRINT_TIME = true
 // COMP_SEARCH_STRING = 'Tufts University Ballroom CompetitionNovember 13th'
-// COMP_SEARCH_STRING = 'Tufts'
+COMP_SEARCH_STRING = 'Tufts'
 // COMP_SEARCH_STRING = 'Harvard'
 // COMP_SEARCH_STRING = 'Worcester'
 // COMP_SEARCH_STRING = 'Brown'
-COMP_SEARCH_STRING = 'MIT'
+// COMP_SEARCH_STRING = 'MIT'
 
 
 /* SCRIPT ENTRANCE */
@@ -298,9 +298,9 @@ function *competitionLinkGenerator($) {
     // Else it is competition info
     else {
 
-      if(!($(element).text().trim().includes(COMP_SEARCH_STRING))){
-        continue;
-      }
+      // if(!($(element).text().trim().includes(COMP_SEARCH_STRING))){
+      //   continue;
+      // }
 
       var ref  =  $(element).find('a').attr('href')
       ,   name =  $(element).find('a').text().trim()
