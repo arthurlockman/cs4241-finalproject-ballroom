@@ -11,7 +11,7 @@ import {createHTMLTable} from './js/table.js';
 import ChartsController from './Charts/ChartsController.jsx';
 var Select = require('react-select');
 
-const baseURL = "http://cs4241-fp-arthurlockman.herokuapp.com"
+const baseURL = "https://cs4241-fp-arthurlockman.herokuapp.com"
 
 class DetailView extends React.Component {
     constructor(props) {
@@ -39,7 +39,7 @@ class DetailView extends React.Component {
 
     getResults() {
         this.setState({currentURL: this.props.postDetail.link});
-        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com' + this.props.postDetail.link).then(res => {
+        axios.get('https://cs4241-fp-arthurlockman.herokuapp.com' + this.props.postDetail.link).then(res => {
             // const posts = res.data.dances.map(obj => obj.danceName);
             this.setState({resultsJSON: res.data});
         });
@@ -47,7 +47,7 @@ class DetailView extends React.Component {
 
     refreshResults(url) {
         this.setState({currentURL: url});
-        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com' + url).then(res => {
+        axios.get('https://cs4241-fp-arthurlockman.herokuapp.com' + url).then(res => {
             // const posts = res.data.dances.map(obj => obj.danceName);
             this.setState({resultsJSON: res.data});
             this.setState({isCompetition: true});
@@ -80,7 +80,7 @@ class DetailView extends React.Component {
     }
 
     handleClickEnter() {
-        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com' + this.state.currentURL + '/' + this.state.roundSelect + '/' + this.state.skillSelect).then(res => {
+        axios.get('https://cs4241-fp-arthurlockman.herokuapp.com' + this.state.currentURL + '/' + this.state.roundSelect + '/' + this.state.skillSelect).then(res => {
             console.log('handleClickEnter', res.data);
             // const posts = res.data.dances.map(obj => obj.danceName);
             // this.setState({resultsJSON: res.data});

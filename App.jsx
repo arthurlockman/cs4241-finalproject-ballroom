@@ -52,14 +52,14 @@ class App extends React.Component {
     }
 
     queryServer(query) {
-        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/search/' + query).then(res => {
+        axios.get('https://cs4241-fp-arthurlockman.herokuapp.com/api/search/' + query).then(res => {
             // const posts = res.data.map(obj => obj.data);
             this.setState({posts: res.data});
         });
     }
 
     getAutocomplete() {
-        axios.get('http://cs4241-fp-arthurlockman.herokuapp.com/api/autocomplete').then(res => {
+        axios.get('https://cs4241-fp-arthurlockman.herokuapp.com/api/autocomplete').then(res => {
             // var m = posts.map(function(a) {
             //     return a.title;
             // });

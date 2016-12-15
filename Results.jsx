@@ -4,7 +4,7 @@ import axios from 'axios';
 import {Link} from 'react-router'
 import {browserHistory} from 'react-router'
 
-const baseURL = "http://cs4241-fp-arthurlockman.herokuapp.com"
+const baseURL = "https://cs4241-fp-arthurlockman.herokuapp.com"
 
 class Results extends React.Component {
     constructor(props) {
