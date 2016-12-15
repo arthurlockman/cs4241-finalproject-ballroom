@@ -1,11 +1,27 @@
 {
-  "name": "lh-4241-simple-node",
-  "version": "0.1.0",
-  "description": "WPI CS 4241 first assignment",
-  "author": "Lane Harrison",
+  "name": "cs4241-fp-ballroom",
+  "version": "1.0.0",
+  "description": "CS4241 Final Project",
+  "author": "Arthur Lockman, Tucker Haydon, Isamu Nakagawa",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "heroku-postbuild": "webpack -p --config ./client/webpack.prod.config.js --progress"
+  },
+  "keywords": [
+    "search",
+    "autosuggest",
+    "autocomplete",
+    "react",
+    "react-component"
+  ],
+  "license": "MIT",
+  "files": [
+    "lib",
+    "client/main.js"
+  ],
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.4.1"
   },
   "dependencies": {
     "cheerio": "^0.22.0",
@@ -14,6 +30,21 @@
     "firebase-admin": "^4.0.4",
     "form-data": "^2.1.2",
     "form-scraper": "0.0.4",
-    "handlebars": "^4.0.6"
+    "handlebars": "^4.0.6",
+    "axios": "^0.15.3",
+    "classnames": "^2.2.5",
+    "es6-promise": "^4.0.5",
+    "json-loader": "^0.5.4",
+    "react": "^15.4.1",
+    "react-cellblock": "^2.0.0",
+    "react-columns": "^0.2.2",
+    "react-dom": "^15.4.1",
+    "react-history": "^0.16.1",
+    "react-raw-html": "^0.4.0",
+    "react-router": "^3.0.0",
+    "react-router-form": "^1.0.2",
+    "victory": "^0.14.0",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
   }
 }
