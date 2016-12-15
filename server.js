@@ -231,12 +231,19 @@ function buildDataForCompetition(competition, year) {
   rounds = Array.from(rounds)
   competitors = Array.from(competitors)
   judges = Array.from(judges)
+  var skills = []
+  for (k = 0; k < rounds.length; k++)
+  {
+    skills = skills.concat(JSON.parse(buildDataForRoundTop(competition, rounds[k], year))["skills"])
+  }
+  skills = new Set(skills)
   var r = {
     "competitionName": competition[0].competitionInfo.name.replace(/[0-9]+\s/, ''),
     "competitionDate": competition[0].competitionInfo.date,
     "rounds": rounds,
     "competitors": competitors,
-    "judges": judges
+    "judges": judges,
+    "skills": Array.from(skills)
   }
   return(JSON.stringify(r))
 }
@@ -393,9 +400,31 @@ router.route('/autocomplete').get(function(req, res) {
 })
 
 // Express Web Site
+
 app.get('/', function(req, res) {
   fs.readFile('index.html', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/css/*', function(req, res) {
+  fs.readFile('css/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/css'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/bundle.js', function(req, res) {
+  fs.readFile('bundle.js', function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/javascript'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/img/*', function(req, res) {
+  fs.readFile('img/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'image/svg+xml'})
     res.end(content, 'utf-8')
   })
 })

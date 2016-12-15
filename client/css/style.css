@@ -12,7 +12,6 @@ html {
   font-feature-settings: "kern";
 }
 
-
 body {
   min-width: 280px;
 }
@@ -51,52 +50,44 @@ p {
   line-height: 20px;
   text-align: center;
   font-size: 14px;
-
-  
 }
+
 .banner.footer {
   margin-bottom: 0;
   background: black;
 }
 
 .token {
-  $r: 50px;
-
   position: absolute;
   bottom: 6px;
   right: 6px;
   z-index: 100;
   background: #ffaa00;
-  width: $r;
-  height: $r;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   color: #000;
   text-align: center;
-  line-height: $r;
+  line-height: 50px;
   font-weight: bold;
-
-  &:after {
-    $d: 2px;
-    content: '';
-    position: absolute;
-    left: -$d;
-    right: -$d;
-    top: -$d;
-    bottom: -$d;
-    border-radius: 50%;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border: $d*2 dotted #ffaa00;
-  }
+}
+.token:after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border: 4px dotted #ffaa00;
 }
 
-$color-a: #66aa66;
-$color-b: #dd2266;
-
 .wave-module {
-  background: $color-a;
+  background: #66aa66;
   min-height: 100px;
   line-height: 100px;
   margin-bottom: 20px;
@@ -108,17 +99,14 @@ $color-b: #dd2266;
 }
 
 .cb-col:nth-child(2n) .wave-module {
-  background: $color-b;
+  background: #dd2266;
 }
 
-.cb-row:nth-child(2n) {
-  .wave-module {
-    background: $color-b;
-  }
-
-  .cb-col:nth-child(2n) .wave-module {
-    background: $color-a;
-  }
+.cb-row:nth-child(2n) .wave-module {
+  background: #dd2266;
+}
+.cb-row:nth-child(2n) .cb-col:nth-child(2n) .wave-module {
+  background: #66aa66;
 }
 
 .example-nav {
@@ -132,21 +120,18 @@ $color-b: #dd2266;
   font-size: 14px;
   padding: 12px;
   border: 1px solid #ffaa00;
-  // color: #ffaa00;
   text-align: center;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
-  -webkit-box-shadow: 2px 4px 21px 0px rgba(20,0,0,0.45);
-  -moz-box-shadow: 2px 4px 21px 0px rgba(20,0,0,0.45);
-  box-shadow: 2px 4px 21px 0px rgba(20,0,0,0.45);
-
-  &:hover,
-  &.active {
-    cursor: pointer;
-    background: white;
-    color: #000;
-  }
+  -webkit-box-shadow: 2px 4px 21px 0px rgba(20, 0, 0, 0.45);
+  -moz-box-shadow: 2px 4px 21px 0px rgba(20, 0, 0, 0.45);
+  box-shadow: 2px 4px 21px 0px rgba(20, 0, 0, 0.45);
+}
+.example-button:hover, .example-button.active {
+  cursor: pointer;
+  background: white;
+  color: #000;
 }
 
 .nav-buttons {
