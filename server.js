@@ -400,7 +400,7 @@ app.get('/', function(req, res) {
   })
 })
 
-app.get('/*', function(req, res) {
+app.get('/client/*', function(req, res) {
   fs.readFile('client/' + req.params[0], function(error, content) {
     var encodingExtension = req.params[0].split('.')[req.params[0].split('.').length - 1]
     if (encodingExtension == 'js')
