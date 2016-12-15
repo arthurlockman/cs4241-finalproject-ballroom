@@ -393,6 +393,7 @@ router.route('/autocomplete').get(function(req, res) {
 })
 
 // Express Web Site
+
 app.get('/', function(req, res) {
   fs.readFile('client/index.html', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
@@ -400,12 +401,16 @@ app.get('/', function(req, res) {
   })
 })
 
-app.get('/client/*', function(req, res) {
-  fs.readFile('client/' + req.params[0], function(error, content) {
-    var encodingExtension = req.params[0].split('.')[req.params[0].split('.').length - 1]
-    if (encodingExtension == 'js')
-      encodingExtension = 'javascript'
-    res.writeHead(200, {'Content-type': 'text/' + encodingExtension})
+app.get('/css/*', function(req, res) {
+  fs.readFile('client/css/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/css'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/bundle.js', function(req, res) {
+  fs.readFile('client/bundle.js', function(error, content) {
+    res.writeHead(200, {'Content-type': 'text/javascript'})
     res.end(content, 'utf-8')
   })
 })
