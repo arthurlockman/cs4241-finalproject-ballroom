@@ -1,12 +1,8 @@
-var Webpack = require('webpack');
-var nodeExternals = require('webpack-node-externals');
-
 var config = {
-    entry: './client/App.jsx',
-    target: 'node',
-    externals: [nodeExternals()],
+    entry: './App.jsx',
+
     output: {
-        path: './client/',
+        path: './',
         filename: 'bundle.js'
     },
 
@@ -14,6 +10,7 @@ var config = {
         loaders: [
             {
                 test: /\.(js|jsx?)$/,
+                exclude: /node_modules/,
                 loader: 'babel',
 
                 query: {

@@ -402,22 +402,29 @@ router.route('/autocomplete').get(function(req, res) {
 // Express Web Site
 
 app.get('/', function(req, res) {
-  fs.readFile('client/index.html', function(error, content) {
+  fs.readFile('index.html', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/html'})
     res.end(content, 'utf-8')
   })
 })
 
 app.get('/css/*', function(req, res) {
-  fs.readFile('client/css/' + req.params[0], function(error, content) {
+  fs.readFile('css/' + req.params[0], function(error, content) {
     res.writeHead(200, {'Content-type': 'text/css'})
     res.end(content, 'utf-8')
   })
 })
 
 app.get('/bundle.js', function(req, res) {
-  fs.readFile('client/bundle.js', function(error, content) {
+  fs.readFile('bundle.js', function(error, content) {
     res.writeHead(200, {'Content-type': 'text/javascript'})
+    res.end(content, 'utf-8')
+  })
+})
+
+app.get('/img/*', function(req, res) {
+  fs.readFile('img/' + req.params[0], function(error, content) {
+    res.writeHead(200, {'Content-type': 'image/svg+xml'})
     res.end(content, 'utf-8')
   })
 })
